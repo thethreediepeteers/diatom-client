@@ -3,10 +3,12 @@ import { Socket } from "./socket.js";
 
 class Game {
   constructor() {
-    this.canvas = new Canvas();
+    this.movement = { val: 0 };
+    this.socket = new Socket("http://localhost:3000", this.movement);
 
-    this.socket = new Socket("http://localhost:3000");
-    this.movement = { up: false, down: false, left: false, right: false };
+    this.canvas = new Canvas(this.socket, this.movement);
+
+    this.entities = [];
   }
 
   init() {
@@ -15,15 +17,23 @@ class Game {
 
   start = () => {
     document.getElementById("startmenu").style.display = "none";
-    this.canvas.display();
 
     this.socket.init();
+    this.canvas.init();
 
     window.requestAnimationFrame(this.update);
   }
 
   update = () => {
+    this.render();
 
+    window.requestAnimationFrame(this.update);
+  }
+
+  render = () => {
+    for (let entity of this.entities) {
+
+    }
   }
 }
 
