@@ -1,7 +1,8 @@
+import { global } from "./global.js";
+
 class Socket {
-  constructor(addr, movement) {
+  constructor(addr) {
     this.addr = addr;
-    this.movement = movement;
   }
 
   init() {
@@ -12,7 +13,7 @@ class Socket {
 
     this.cmd = {
       set: (index, value) => {
-        if (commands[index] !== value) {
+        if (commands[index] !== value || index === 0) {
           commands[index] = value;
           flag = true;
         }
@@ -25,7 +26,7 @@ class Socket {
           if (commands[i]) o += Math.pow(2, i);
         }
 
-        this.talk(0, this.movement.val, o);
+        this.talk(0, global.movement, o);
       },
 
       ready: () => flag
@@ -41,20 +42,47 @@ class Socket {
     this.ws.commandCycle = setInterval(() => {
       if (this.cmd.ready()) this.cmd.talk();
     });
+    global.gameStart = true;
   }
 
   onmessage = (message) => {
-    console.log("Message from server: ", message.data);
+    let m = JSON.parse(message.data);
+
+    console.log("Message from server: ", m);
+    switch (m[0]) {
+      case 0:
+        global.index = m[1].id;
+
+        break;
+      case 1:
+        for (let i = 1; i < m.length; i++) {
+          let entity = global.entities.find(e => e.index === m[i].id);
+          if (!entity) {
+            console.log(m[1].id);
+            entity = {};
+            global.entities.push(entity);
+          }
+
+          entity.index = m[i].id;
+
+          const pos = m[i].pos;
+          entity.x = pos.x;
+          entity.y = pos.y;
+        }
+
+        break;
+    }
   }
 
   onclose = () => {
     console.log("Connection closed.");
     clearInterval(this.ws.commandCycle);
+
+    if (global.gameStart) global.disconnected = true;
+    global.gameStart = false;
   }
 
   talk(...message) {
-
-    console.log('t');
     this.ws.send(JSON.stringify(message));
   }
 }

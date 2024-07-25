@@ -1,14 +1,12 @@
 import { Canvas } from "./canvas.js";
 import { Socket } from "./socket.js";
+import { global } from "./global.js";
+import { drawConnecting, drawEntity } from "./draw.js";
 
 class Game {
   constructor() {
-    this.movement = { val: 0 };
-    this.socket = new Socket("http://localhost:3000", this.movement);
-
-    this.canvas = new Canvas(this.socket, this.movement);
-
-    this.entities = [];
+    global.socket = new Socket("http://localhost:3000/ws");
+    this.canvas = new Canvas();
   }
 
   init() {
@@ -18,7 +16,7 @@ class Game {
   start = () => {
     document.getElementById("startmenu").style.display = "none";
 
-    this.socket.init();
+    global.socket.init();
     this.canvas.init();
 
     window.requestAnimationFrame(this.update);
@@ -31,8 +29,20 @@ class Game {
   }
 
   render = () => {
-    for (let entity of this.entities) {
+    this.canvas.clear();
 
+    if (global.gameStart) {
+      // draw game
+      this.canvas.drawGrid(0, 0, 32);
+      for (let entity of global.entities) {
+        drawEntity(entity, this.canvas.ctx);
+      }
+    }
+    else if (!global.disconnected) {
+      drawConnecting();
+    }
+    if (global.disconnected) {
+      // draw disconnect
     }
   }
 }
