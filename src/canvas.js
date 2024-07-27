@@ -4,7 +4,9 @@ class Canvas {
   constructor() {
     this.cv = document.getElementById("canvas");
 
-    this.cv.style.display = "none";
+    this.width = this.cv.width;
+    this.height = this.cv.height;
+
     this.resize();
 
     this.ctx = this.cv.getContext("2d");
@@ -13,8 +15,8 @@ class Canvas {
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
-    this.cv.width = width;
-    this.cv.height = height;
+    this.cv.width = this.width = width;
+    this.cv.height = this.height = height;
   }
 
   init() {
@@ -26,25 +28,23 @@ class Canvas {
   }
 
   clear() {
-    this.ctx.clearRect(0, 0, this.cv.width, this.cv.height);
+    this.ctx.clearRect(0, 0, this.width, this.height);
 
     this.ctx.fillStyle = "#c9c9c9";
-    this.ctx.fillRect(0, 0, this.cv.width, this.cv.height);
+    this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
   drawGrid(dx, dy, cellSize) {
-    const width = this.cv.width;
-    const height = this.cv.height;
 
     this.ctx.beginPath();
-    for (let x = dx % cellSize; x < width; x += cellSize) {
+    for (let x = dx % cellSize; x < this.width; x += cellSize) {
       this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, height);
+      this.ctx.lineTo(x, this.height);
     }
 
-    for (let y = dy % cellSize; y < height; y += cellSize) {
+    for (let y = dy % cellSize; y < this.height; y += cellSize) {
       this.ctx.moveTo(0, y);
-      this.ctx.lineTo(width, y);
+      this.ctx.lineTo(this.width, y);
     }
 
     this.ctx.lineWidth = 0.5;

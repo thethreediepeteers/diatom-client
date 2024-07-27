@@ -67,6 +67,10 @@ canvas {
 }
 
 .btn {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   flex: 1 1 0%;
   margin: 5px;
   width: 180px;

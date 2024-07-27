@@ -1,7 +1,8 @@
 import { Canvas } from "./canvas.js";
 import { Socket } from "./socket.js";
 import { global } from "./global.js";
-import { drawConnecting, drawEntity } from "./draw.js";
+import { drawConnecting, drawDisconnected, drawEntities } from "./draw.js";
+import { lerp } from "./util.js";
 
 class Game {
   constructor() {
@@ -23,26 +24,38 @@ class Game {
   }
 
   update = () => {
+    let startTime = Date.now();
+    global.map.width = lerp(global.map.width, global.map.serverData.width, 0.1);
+    global.map.height = lerp(global.map.height, global.map.serverData.height, 0.1);
+
     this.render();
 
+    let frameTime = Date.now() - startTime;
+    console.log(frameTime);
     window.requestAnimationFrame(this.update);
   }
 
   render = () => {
     this.canvas.clear();
 
-    if (global.gameStart) {
-      // draw game
-      this.canvas.drawGrid(0, 0, 32);
-      for (let entity of global.entities) {
-        drawEntity(entity, this.canvas.ctx);
-      }
+    if (global.gameStart && global.player) {
+      const cx = this.canvas.width / 2;
+      const cy = this.canvas.height / 2;
+      const px = global.player.x;
+      const py = global.player.y;
+
+      this.canvas.ctx.fillStyle = "#d9d9d9";
+      this.canvas.ctx.fillRect(cx - px, cy - py, global.map.width, global.map.height);
+
+      this.canvas.drawGrid(cx - px, cy - py, 32);
+
+      drawEntities(px, py);
     }
     else if (!global.disconnected) {
       drawConnecting();
     }
     if (global.disconnected) {
-      // draw disconnect
+      drawDisconnected();
     }
   }
 }

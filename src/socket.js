@@ -48,28 +48,38 @@ class Socket {
   onmessage = (message) => {
     let m = JSON.parse(message.data);
 
-    console.log("Message from server: ", m);
+    //console.log("Message from server: ", m);
     switch (m[0]) {
       case 0:
         global.index = m[1].id;
 
+        global.map.serverData.width = m[1].map.width;
+        global.map.serverData.height = m[1].map.height;
+
         break;
       case 1:
+        let ids = new Set();
         for (let i = 1; i < m.length; i++) {
-          let entity = global.entities.find(e => e.index === m[i].id);
+          const id = m[i].id;
+          const pos = m[i].pos;
+
+          ids.add(id);
+
+          let entity = global.entities.find(e => e.index === id);
           if (!entity) {
-            console.log(m[1].id);
-            entity = {};
+            entity = { serverData: { x: 0, y: 0 }, x: 0, y: 0 };
             global.entities.push(entity);
           }
 
-          entity.index = m[i].id;
+          entity.index = id;
+          entity.serverData.x = pos.x;
+          entity.serverData.y = pos.y;
 
-          const pos = m[i].pos;
-          entity.x = pos.x;
-          entity.y = pos.y;
+          if (id === global.index) {
+            global.player.x = pos.x;
+            global.player.y = pos.y;
+          }
         }
-
         break;
     }
   }
