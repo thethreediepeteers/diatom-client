@@ -62,24 +62,37 @@ class Socket {
         for (let i = 1; i < m.length; i++) {
           const id = m[i].id;
           const pos = m[i].pos;
+          const size = m[i].size;
 
           ids.add(id);
 
           let entity = global.entities.find(e => e.index === id);
           if (!entity) {
-            entity = { serverData: { x: 0, y: 0 }, x: 0, y: 0 };
+            entity = { serverData: { x: 0, y: 0, size: 0 }, x: 0, y: 0, size: 0 };
             global.entities.push(entity);
           }
 
           entity.index = id;
           entity.serverData.x = pos.x;
           entity.serverData.y = pos.y;
+          entity.serverData.size = size;
 
           if (id === global.index) {
             global.player.x = pos.x;
             global.player.y = pos.y;
+            global.player.size = size;
           }
         }
+        for (let e of global.entities) {
+          if (!ids.has(e.index)) e.serverData.size = 0;
+        }
+
+        global.entities = global.entities.filter(e => {
+          if (!ids.has(e.index)) {
+            e.serverData.size = 0;
+          }
+          return ids.has(e.index) || e.serverData.size !== 0 || e.size !== 0;
+        });
         break;
     }
   }

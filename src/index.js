@@ -20,18 +20,18 @@ class Game {
     global.socket.init();
     this.canvas.init();
 
+    window.addEventListener("resize", () => this.canvas.resize());
+    window.addEventListener("contextmenu", (event) => event.preventDefault());
+
     window.requestAnimationFrame(this.update);
   }
 
   update = () => {
-    let startTime = Date.now();
     global.map.width = lerp(global.map.width, global.map.serverData.width, 0.1);
     global.map.height = lerp(global.map.height, global.map.serverData.height, 0.1);
 
     this.render();
 
-    let frameTime = Date.now() - startTime;
-    console.log(frameTime);
     window.requestAnimationFrame(this.update);
   }
 

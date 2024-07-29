@@ -30,6 +30,7 @@ const drawEntities = (px, py) => {
   for (let entity of global.entities) {
     entity.x = lerp(entity.x, entity.serverData.x, 0.2);
     entity.y = lerp(entity.y, entity.serverData.y, 0.2);
+    entity.size = lerp(entity.size, entity.serverData.size, 0.2);
 
     let x = entity.x - px;
     let y = entity.y - py;
@@ -42,7 +43,7 @@ const drawEntities = (px, py) => {
     x += cx;
     y += cy;
 
-    drawEntity(x, y, 30);
+    drawEntity(x, y, entity.size);
   }
 }
 
@@ -85,7 +86,7 @@ const drawPoly = (x, y, radius, angle, shape, color) => {
     ctx.fillStyle = color;
     ctx.fill();
 
-    ctx.lineWidth = radius / 7;
+    ctx.lineWidth = 5;
     ctx.strokeStyle = offsetHex(color);
     ctx.stroke();
 

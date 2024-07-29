@@ -15,8 +15,8 @@ class Canvas {
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
-    this.cv.width = this.width = width;
-    this.cv.height = this.height = height;
+    this.cv.width = this.width = width * window.devicePixelRatio;
+    this.cv.height = this.height = height * window.devicePixelRatio;
   }
 
   init() {
@@ -24,7 +24,6 @@ class Canvas {
 
     window.addEventListener("keydown", (event) => this.keyDown(event));
     window.addEventListener("keyup", (event) => this.keyUp(event));
-    window.addEventListener("resize", () => this.resize());
   }
 
   clear() {
