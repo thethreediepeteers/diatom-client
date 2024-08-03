@@ -61,24 +61,27 @@ class Socket {
     }
 
     const ids = new Set();
-    const entitySize = 24;
+    const entitySize = 27;
 
     for (let offset = 0; offset < view.byteLength; offset += entitySize) {
       const pos = { x: view.getFloat64(offset, true), y: view.getFloat64(offset + 8, true) };
       const size = view.getFloat32(offset + 16, true);
       const id = view.getUint32(offset + 20, true);
+      const color = { r: view.getUint8(offset + 24, true), g: view.getUint8(offset + 25, true), b: view.getUint8(offset + 26, true) };
+      const colorStr = `#${color.r.toString(16).padStart(2, '0')}${color.g.toString(16).padStart(2, '0')}${color.b.toString(16).padStart(2, '0')}`;
 
       ids.add(id);
-      let entity = global.entities.find(e => e.index === id);
+      let entity = global.entities.get(id);
       if (!entity) {
-        entity = { serverData: { x: 0, y: 0, size: 0 }, x: 0, y: 0, size: 0 };
-        global.entities.push(entity);
+        entity = { serverData: { x: 0, y: 0, size: 0 }, x: 0, y: 0, size: 0, color: colorStr };
+        global.entities.set(id, entity);
       }
 
       entity.index = id;
       entity.serverData.x = pos.x;
       entity.serverData.y = pos.y;
       entity.serverData.size = size;
+      entity.color = colorStr;
 
       if (id === global.index) {
         global.player.x = pos.x;
@@ -87,16 +90,16 @@ class Socket {
       }
     }
 
-    for (let e of global.entities) {
-      if (!ids.has(e.index)) e.serverData.size = 0;
+    for (let [id, entity] of global.entities) {
+      if (!ids.has(id)) entity.serverData.size = 0;
     }
 
-    global.entities = global.entities.filter(e => {
-      if (!ids.has(e.index)) {
-        e.serverData.size = 0;
+    global.entities = new Map([...global.entities].filter(([id, entity]) => {
+      if (!ids.has(id)) {
+        entity.serverData.size = 0;
       }
-      return ids.has(e.index) || e.serverData.size !== 0 || e.size !== 0;
-    });
+      return ids.has(id) || entity.serverData.size !== 0 || entity.size !== 0;
+    }));
   }
 
   onclose = () => {

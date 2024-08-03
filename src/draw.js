@@ -27,7 +27,7 @@ const drawDisconnected = () => {
 const drawEntities = (px, py) => {
   const cx = canvas.width / 2, cy = canvas.height / 2;
 
-  for (let entity of global.entities) {
+  for (let [id, entity] of global.entities) {
     entity.x = lerp(entity.x, entity.serverData.x, 0.2);
     entity.y = lerp(entity.y, entity.serverData.y, 0.2);
     entity.size = lerp(entity.size, entity.serverData.size, 0.2);
@@ -43,7 +43,7 @@ const drawEntities = (px, py) => {
     x += cx;
     y += cy;
 
-    drawEntity(x, y, entity.size);
+    drawEntity(x, y, entity.size, 0, 0, entity.color);
   }
 }
 

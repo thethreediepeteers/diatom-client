@@ -24,6 +24,8 @@ class Canvas {
 
     window.addEventListener("keydown", (event) => this.keyDown(event));
     window.addEventListener("keyup", (event) => this.keyUp(event));
+    window.addEventListener("mousedown", (event) => this.mouseDown(event));
+    window.addEventListener("mouseup", (event) => this.mouseUp(event));
   }
 
   clear() {
@@ -119,6 +121,14 @@ class Canvas {
     }
 
     if (changedMovement) this.calcMovement();
+  }
+
+  mouseDown(event) {
+    global.socket.cmd.set(1, true);
+  }
+
+  mouseUp(event) {
+    global.socket.cmd.set(1, false);
   }
 }
 
