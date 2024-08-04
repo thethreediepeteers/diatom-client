@@ -4,6 +4,11 @@ import { global } from "./global.js";
 import { drawConnecting, drawDisconnected, drawEntities } from "./draw.js";
 import { lerp } from "./util.js";
 
+function calculateMouse() {
+  global.target.x = Math.round(global.mouse.x - global.screenWidth / 2);
+  global.target.y = Math.round(global.mouse.y - global.screenHeight / 2);
+}
+
 class Game {
   constructor() {
     global.socket = new Socket("http://localhost:3000/ws");
@@ -29,6 +34,8 @@ class Game {
   update = () => {
     global.map.width = lerp(global.map.width, global.map.serverData.width, 0.1);
     global.map.height = lerp(global.map.height, global.map.serverData.height, 0.1);
+
+    calculateMouse();
 
     this.render();
 

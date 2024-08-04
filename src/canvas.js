@@ -15,17 +15,20 @@ class Canvas {
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
-    this.cv.width = this.width = width * window.devicePixelRatio;
-    this.cv.height = this.height = height * window.devicePixelRatio;
+    this.cv.width = this.width = global.screenWidth = width * window.devicePixelRatio;
+    this.cv.height = this.height = global.screenHeight = height * window.devicePixelRatio;
   }
 
   init() {
     this.cv.style.display = "flex";
+    this.cv.focus();
 
-    window.addEventListener("keydown", (event) => this.keyDown(event));
-    window.addEventListener("keyup", (event) => this.keyUp(event));
-    window.addEventListener("mousedown", (event) => this.mouseDown(event));
-    window.addEventListener("mouseup", (event) => this.mouseUp(event));
+    this.cv.addEventListener("keydown", (event) => this.keyDown(event));
+    this.cv.addEventListener("keyup", (event) => this.keyUp(event));
+
+    this.cv.addEventListener("mousedown", (event) => this.mouseDown(event));
+    this.cv.addEventListener("mouseup", (event) => this.mouseUp(event));
+    this.cv.addEventListener("mousemove", (event) => this.mouseMove(event));
   }
 
   clear() {
@@ -129,6 +132,12 @@ class Canvas {
 
   mouseUp(event) {
     global.socket.cmd.set(1, false);
+  }
+
+  mouseMove(event) {
+    global.mouse.x = event.clientX;
+    global.mouse.y = event.clientY;
+    global.socket.cmd.talk();
   }
 }
 

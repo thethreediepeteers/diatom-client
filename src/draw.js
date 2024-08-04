@@ -1,4 +1,4 @@
-import { lerp } from "./util.js";
+import { lerp, lerpAngle } from "./util.js";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -25,29 +25,28 @@ const drawDisconnected = () => {
 }
 
 const drawEntities = (px, py) => {
+  if (!global.player) return;
+
   const cx = canvas.width / 2, cy = canvas.height / 2;
 
   for (let [id, entity] of global.entities) {
+    if (id === global.index) continue;
     entity.x = lerp(entity.x, entity.serverData.x, 0.2);
     entity.y = lerp(entity.y, entity.serverData.y, 0.2);
     entity.size = lerp(entity.size, entity.serverData.size, 0.2);
+    entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.3);
 
-    let x = entity.x - px;
-    let y = entity.y - py;
+    let x = entity.x - px + cx;
+    let y = entity.y - py + cy;
 
-    if (entity.index === global.index) {
-      x = 0;
-      y = 0;
-    }
-
-    x += cx;
-    y += cy;
-
-    drawEntity(x, y, entity.size, 0, 0, entity.color);
+    drawEntity(x, y, entity.size, entity.shape, entity.angle, entity.color);
   }
+
+  let player = global.player;
+  drawEntity(cx, cy, player.size, player.shape, player.angle, player.color); // draw player on top
 }
 
-const drawEntity = (x, y, size, shape = 0, angle = 0, color = "#00B0E1") => {
+const drawEntity = (x, y, size, shape, angle, color = "#00B0E1") => {
   ctx.lineWidth = 5;
   drawPoly(x, y, size, shape, angle, color);
 }
@@ -75,23 +74,30 @@ function offsetHex(hex) {
   return newHex;
 }
 
-const drawPoly = (x, y, radius, angle, shape, color) => {
+const drawPoly = (x, y, radius, shape, angle, color) => {
   angle += shape % 2 ? 0 : Math.PI / shape;
 
   ctx.beginPath();
   if (!shape) {
     // circle
     ctx.arc(x, y, radius, 0, 2 * Math.PI);
-
-    ctx.fillStyle = color;
-    ctx.fill();
-
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = offsetHex(color);
-    ctx.stroke();
-
-    ctx.closePath();
+  } else {
+    // polygon
+    angle += (shape % 1) * Math.PI * 2;
+    for (let i = 0; i < shape; i++) {
+      let theta = (i / shape) * 2 * Math.PI + angle;
+      ctx.lineTo(x + radius * Math.cos(theta), y + radius * Math.sin(theta));
+    }
   }
+
+  ctx.closePath();
+
+  ctx.fillStyle = color;
+  ctx.fill();
+
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = offsetHex(color);
+  ctx.stroke();
 }
 
 export { drawConnecting, drawDisconnected, drawEntities };
