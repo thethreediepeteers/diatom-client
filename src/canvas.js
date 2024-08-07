@@ -126,12 +126,23 @@ class Canvas {
     if (changedMovement) this.calcMovement();
   }
 
+  handleMouse(button, pressed) {
+    switch (button) {
+      case 0:
+        global.socket.cmd.set(1, pressed);
+        break;
+      case 2:
+        global.socket.cmd.set(2, pressed);
+        break;
+    }
+  }
+
   mouseDown(event) {
-    global.socket.cmd.set(1, true);
+    this.handleMouse(event.button, true);
   }
 
   mouseUp(event) {
-    global.socket.cmd.set(1, false);
+    this.handleMouse(event.button, false);
   }
 
   mouseMove(event) {

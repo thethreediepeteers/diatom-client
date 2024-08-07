@@ -25,25 +25,42 @@ const drawDisconnected = () => {
 }
 
 const drawEntities = (px, py) => {
-  if (!global.player) return;
+  let player = global.player;
+  let playerMockup = global.mockups.get(player.mockupId);
+  if (!global || !playerMockup) return;
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
 
   for (let [id, entity] of global.entities) {
-    if (id === global.index) continue;
+    if (entity.dead) continue;
+    let mockup = global.mockups.get(entity.mockupId);
+
     entity.x = lerp(entity.x, entity.serverData.x, 0.2);
     entity.y = lerp(entity.y, entity.serverData.y, 0.2);
-    entity.size = lerp(entity.size, entity.serverData.size, 0.2);
+
+    let sizeVal = entity.serverData.size;
+    if (entity.dying) {
+      sizeVal = 0;
+      if (entity.size === 0) {
+        entity.dying = false; entity.dead = true;
+      }
+    }
+    entity.size = lerp(entity.size, sizeVal, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.3);
 
-    let x = entity.x - px + cx;
-    let y = entity.y - py + cy;
+    let x = entity.x - px;
+    let y = entity.y - py;
 
-    drawEntity(x, y, entity.size, entity.shape, entity.angle, entity.color);
+    if (id === global.index) {
+      x = 0;
+      y = 0;
+    }
+
+    x += cx;
+    y += cy;
+
+    drawEntity(x, y, entity.size, mockup.shape, entity.angle, mockup.color);
   }
-
-  let player = global.player;
-  drawEntity(cx, cy, player.size, player.shape, player.angle, player.color); // draw player on top
 }
 
 const drawEntity = (x, y, size, shape, angle, color = "#00B0E1") => {

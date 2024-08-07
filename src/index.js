@@ -2,7 +2,7 @@ import { Canvas } from "./canvas.js";
 import { Socket } from "./socket.js";
 import { global } from "./global.js";
 import { drawConnecting, drawDisconnected, drawEntities } from "./draw.js";
-import { lerp } from "./util.js";
+import { fetchAsync, lerp } from "./util.js";
 
 function calculateMouse() {
   global.target.x = Math.round(global.mouse.x - global.screenWidth / 2);
@@ -22,6 +22,7 @@ class Game {
   start = () => {
     document.getElementById("startmenu").style.display = "none";
 
+    this.loadMockups();
     global.socket.init();
     this.canvas.init();
 
@@ -29,6 +30,66 @@ class Game {
     window.addEventListener("contextmenu", (event) => event.preventDefault());
 
     window.requestAnimationFrame(this.update);
+  }
+
+  loadMockups = () => {
+    let mockupData = fetchAsync("http://localhost:3000/mockups");
+    mockupData.then((hexMockups) => {
+      let buffer = new Uint8Array(hexMockups.match(/../g).map(h => parseInt(h, 16))).buffer;
+      let view = new DataView(buffer);
+
+      for (let offset = 0; offset < view.byteLength;) {
+        let mockup = { guns: [], turrets: [] };
+
+        let mockupId = view.getInt32(offset, true);
+        offset += 4;
+        let size = view.getInt16(offset, true);
+        offset += 2;
+        let shape = view.getUint8(offset, true);
+        offset += 1;
+
+        mockup.id = mockupId;
+        mockup.size = size;
+        mockup.shape = shape;
+
+        let gunsSize = view.getInt32(offset, true);
+        offset += 4;
+
+        for (let i = 0; i < gunsSize; i++) {
+          let gunLength = view.getInt16(offset, true);
+          offset += 2;
+          let gunWidth = view.getInt16(offset, true);
+          offset += 2;
+          let gunX = view.getFloat32(offset, true);
+          offset += 4;
+          let gunY = view.getFloat32(offset, true);
+          offset += 4;
+          let angle = view.getFloat32(offset, true);
+          offset += 4;
+
+          let gun = { length: gunLength, width: gunWidth, x: gunX, y: gunY, angle: angle };
+          mockup.guns.push(gun);
+        }
+
+        let turretsSize = view.getInt32(offset, true);
+        offset += 4;
+
+        for (let i = 0; i < turretsSize; i++) {
+          let turretSize = view.getInt16(offset, true);
+          offset += 2;
+          let turretX = view.getFloat32(offset, true);
+          offset += 4;
+          let turretY = view.getFloat32(offset, true);
+          let turretShape = view.getUint8(offset, true);
+          offset += 1;
+
+          let turret = { size: turretSize, x: turretX, y: turretY, shape: turretShape };
+          mockup.turrets.push(turret);
+        }
+
+        global.mockups.set(mockupId, mockup);
+      }
+    });
   }
 
   update = () => {
