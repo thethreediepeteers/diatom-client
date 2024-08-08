@@ -66,8 +66,10 @@ class Game {
           offset += 4;
           let angle = view.getFloat32(offset, true);
           offset += 4;
+          let aspect = view.getFloat32(offset, true);
+          offset += 4;
 
-          let gun = { length: gunLength, width: gunWidth, x: gunX, y: gunY, angle: angle };
+          let gun = { length: gunLength, width: gunWidth, x: gunX, y: gunY, angle: angle, aspect: aspect };
           mockup.guns.push(gun);
         }
 
