@@ -43,8 +43,8 @@ class Game {
 
         let mockupId = view.getInt32(offset, true);
         offset += 4;
-        let size = view.getInt16(offset, true);
-        offset += 2;
+        let size = view.getFloat32(offset, true);
+        offset += 4;
         let shape = view.getUint8(offset, true);
         offset += 1;
 
@@ -56,20 +56,20 @@ class Game {
         offset += 4;
 
         for (let i = 0; i < gunsSize; i++) {
-          let gunLength = view.getInt16(offset, true);
-          offset += 2;
-          let gunWidth = view.getInt16(offset, true);
-          offset += 2;
-          let gunX = view.getFloat32(offset, true);
+          let gunLength = view.getFloat32(offset, true);
           offset += 4;
-          let gunY = view.getFloat32(offset, true);
+          let gunWidth = view.getFloat32(offset, true);
+          offset += 4;
+          let gunOffset = view.getFloat32(offset, true);
+          offset += 4;
+          let gunDirection = view.getFloat32(offset, true);
           offset += 4;
           let angle = view.getFloat32(offset, true);
           offset += 4;
           let aspect = view.getFloat32(offset, true);
           offset += 4;
 
-          let gun = { length: gunLength, width: gunWidth, x: gunX, y: gunY, angle: angle, aspect: aspect };
+          let gun = { length: gunLength, width: gunWidth, offset: gunOffset, direction: gunDirection, angle: angle, aspect: aspect };
           mockup.guns.push(gun);
         }
 
@@ -77,18 +77,20 @@ class Game {
         offset += 4;
 
         for (let i = 0; i < turretsSize; i++) {
-          let turretSize = view.getInt16(offset, true);
-          offset += 2;
           let turretX = view.getFloat32(offset, true);
           offset += 4;
           let turretY = view.getFloat32(offset, true);
+          offset += 4;
+          let turretSize = view.getFloat32(offset, true);
+          offset += 4;
+          let turretAngle = view.getFloat32(offset, true);
+          offset += 4;
           let turretShape = view.getUint8(offset, true);
           offset += 1;
 
-          let turret = { size: turretSize, x: turretX, y: turretY, shape: turretShape };
+          let turret = { size: turretSize, x: turretX, y: turretY, angle: turretAngle, shape: turretShape };
           mockup.turrets.push(turret);
         }
-
         global.mockups.set(mockupId, mockup);
       }
     });

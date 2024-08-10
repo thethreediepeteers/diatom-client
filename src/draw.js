@@ -46,7 +46,7 @@ const drawEntities = (px, py) => {
       }
     }
     entity.size = lerp(entity.size, sizeVal, 0.2);
-    entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.3);
+    entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
     let x = entity.x - px;
     let y = entity.y - py;
@@ -59,11 +59,24 @@ const drawEntities = (px, py) => {
     x += cx;
     y += cy;
 
+    // draw guns below 
+    for (let gun of mockup.guns) {
+      let gx = gun.offset * Math.cos(gun.direction + gun.angle + entity.angle);
+      let gy = gun.offset * Math.sin(gun.direction + gun.angle + entity.angle);
+      drawTrapezoid(x + gx, y + gy, gun.length, gun.width, entity.angle + gun.angle, gun.aspect, "#808080", "#606060");
+    }
+
     drawEntity(x, y, entity.size, mockup.shape, entity.angle, mockup.color);
+
+    // draw turrets above
+    for (let turret of mockup.turrets) {
+      console.log(turret);
+      drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, entity.angle + turret.angle, "#808080", "#606060");
+    }
   }
 }
 
-const drawEntity = (x, y, size, shape, angle, color = "#00B0E1") => {
+const drawEntity = (x, y, size, shape, angle, color = "#c9c9c9") => {
   ctx.lineWidth = 5;
   drawPoly(x, y, size, shape, angle, color);
 }
@@ -91,7 +104,35 @@ function offsetHex(hex) {
   return newHex;
 }
 
-const drawPoly = (x, y, radius, shape, angle, color) => {
+const drawTrapezoid = (x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) => {
+  let h = aspect > 0 ? [width * aspect, width] : [width, -width / aspect];
+
+  let points = [
+    [0, h[1]],
+    [length * 2, h[0]],
+    [length * 2, -h[0]],
+    [0, -h[1]]
+  ];
+
+  let sinT = Math.sin(angle);
+  let cosT = Math.cos(angle);
+
+  ctx.beginPath();
+  for (let point of points) {
+    let newX = point[0] * cosT - point[1] * sinT + x,
+      newY = point[0] * sinT + point[1] * cosT + y;
+    ctx.lineTo(newX, newY);
+  }
+  ctx.closePath();
+
+  ctx.lineWidth = 5;
+  ctx.fillStyle = color;
+  ctx.fill();
+  ctx.strokeStyle = strokeColor;
+  ctx.stroke();
+}
+
+const drawPoly = (x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) => {
   angle += shape % 2 ? 0 : Math.PI / shape;
 
   ctx.beginPath();
@@ -113,7 +154,7 @@ const drawPoly = (x, y, radius, shape, angle, color) => {
   ctx.fill();
 
   ctx.lineWidth = 5;
-  ctx.strokeStyle = offsetHex(color);
+  ctx.strokeStyle = strokeColor;
   ctx.stroke();
 }
 
