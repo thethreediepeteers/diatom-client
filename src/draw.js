@@ -63,15 +63,14 @@ const drawEntities = (px, py) => {
     for (let gun of mockup.guns) {
       let gx = gun.offset * Math.cos(gun.direction + gun.angle + entity.angle);
       let gy = gun.offset * Math.sin(gun.direction + gun.angle + entity.angle);
-      drawTrapezoid(x + gx, y + gy, gun.length, gun.width, entity.angle + gun.angle, gun.aspect, "#808080", "#606060");
+      drawTrapezoid(x + gx, y + gy, gun.length, gun.width, entity.angle + gun.angle, gun.aspect, "#808080");
     }
 
     drawEntity(x, y, entity.size, mockup.shape, entity.angle, mockup.color);
 
     // draw turrets above
     for (let turret of mockup.turrets) {
-      console.log(turret);
-      drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, entity.angle + turret.angle, "#808080", "#606060");
+      drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, entity.angle + turret.angle, "#808080");
     }
   }
 }
@@ -90,9 +89,9 @@ function offsetHex(hex) {
     return Math.min(Math.max(value, min), max);
   }
 
-  const newR = clamp(r - 50, 0, 255);
-  const newG = clamp(g - 50, 0, 255);
-  const newB = clamp(b - 50, 0, 255);
+  const newR = clamp(r - 32, 0, 255);
+  const newG = clamp(g - 32, 0, 255);
+  const newB = clamp(b - 32, 0, 255);
 
   const toHex = (comp) => {
     const hex = comp.toString(16);
