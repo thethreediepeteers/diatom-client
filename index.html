@@ -11,16 +11,37 @@
 
 <body>
   <div id="startmenu">
-    <img id="icon" src="./assets/icon.png" id="icon" alt="icon">
+    <img id="icon" src="./assets/icon.png" alt="icon">
     <h1 class="title">Diatom.io</h1>
     <div id="buttons">
-      <div class="row">
-        <button class="image"><img src="./assets/svg/bucket.svg"></img></button>
-        <button class="btn" id="start">Play</button>
-        <button class="image"><img src="./assets/svg/settings.svg"></img></button>
+      <div id="mainbuttons">
+        <div class="row">
+          <button class="image" id="colorbucket"><img src="./assets/svg/bucket.svg"></button>
+          <button class="btn" id="start">Play</button>
+          <button class="image"><img src="./assets/svg/settings.svg"></button>
+        </div>
+        <div class="row">
+          <button class="btn" id="changelog">Changelog</button>
+        </div>
       </div>
-      <div class="row">
-        <button class="btn" id="changelog">Changelog</button>
+      <div id="colorbuttons">
+        <div id="colorselect">
+          <div class="row">
+            <button class="color-image" id="col1"><img src="./assets/svg/colorblue.svg"></button>
+            <button class="color-image" id="col2"><img src="./assets/svg/colorred.svg"></button>
+            <button class="color-image" id="col3"><img src="./assets/svg/coloryellow.svg"></button>
+            <button class="color-image" id="col4"><img src="./assets/svg/colororange.svg"></button>
+          </div>
+          <div class="row">
+            <button class="color-image" id="col5"><img src="./assets/svg/colorpurple.svg"></button>
+            <button class="color-image" id="col6"><img src="./assets/svg/colorgreen.svg"></button>
+            <button class="color-image" id="col7"><img src="./assets/svg/coloraqua.svg"></button>
+            <button class="color-image" id="col8"><img src="./assets/svg/colorgrey.svg"></button>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="colorconfirm">Confirm</button>
+        </div>
       </div>
     </div>
   </div>

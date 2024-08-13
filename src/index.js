@@ -11,11 +11,31 @@ function calculateMouse() {
 
 class Game {
   constructor() {
-    global.socket = new Socket("http://localhost:3000/ws");
     this.canvas = new Canvas();
   }
 
   init() {
+    document.getElementById("colorbucket").addEventListener("click", () => {
+      document.getElementById("mainbuttons").style.display = "none";
+      document.getElementById("colorbuttons").style.display = "block";
+    });
+    document.getElementById("colorconfirm").addEventListener("click", () => {
+      document.getElementById("colorbuttons").style.display = "none";
+      document.getElementById("mainbuttons").style.display = "block";
+    });
+
+    let colorRows = document.getElementById("colorselect").children;
+    Array.from(colorRows).forEach(row => {
+      let buttons = row.children;
+      Array.from(buttons).forEach(button => {
+        button.addEventListener("click", () => {
+          global.color = global.colors.get(button.id);
+          document.getElementById("colorconfirm").style.background = global.color;
+          document.getElementById("colorbucket").style.background = global.color;
+        });
+      });
+    });
+
     document.getElementById("start").addEventListener("click", this.start);
   }
 
@@ -23,6 +43,7 @@ class Game {
     document.getElementById("startmenu").style.display = "none";
 
     this.loadMockups();
+    global.socket = new Socket(`http://localhost:3000/ws?color=${encodeURIComponent(global.color)}`);
     global.socket.init();
     this.canvas.init();
 

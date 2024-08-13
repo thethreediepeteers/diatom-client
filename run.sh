@@ -1,1 +1,1 @@
-basic-http-server --addr 0.0.0.0:8080
+httplz --port 8080
