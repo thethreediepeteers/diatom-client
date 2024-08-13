@@ -66,7 +66,7 @@ const drawEntities = (px, py) => {
       drawTrapezoid(x + gx, y + gy, gun.length, gun.width, entity.angle + gun.angle, gun.aspect, "#808080");
     }
 
-    drawEntity(x, y, entity.size, mockup.shape, entity.angle, mockup.color);
+    drawEntity(x, y, entity.size, mockup.shape, entity.angle, entity.color);
 
     // draw turrets above
     for (let turret of mockup.turrets) {
@@ -75,7 +75,7 @@ const drawEntities = (px, py) => {
   }
 }
 
-const drawEntity = (x, y, size, shape, angle, color = "#c9c9c9") => {
+const drawEntity = (x, y, size, shape, angle, color) => {
   ctx.lineWidth = 5;
   drawPoly(x, y, size, shape, angle, color);
 }
