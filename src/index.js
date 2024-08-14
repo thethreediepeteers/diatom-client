@@ -15,13 +15,23 @@ class Game {
   }
 
   init() {
-    document.getElementById("colorbucket").addEventListener("click", () => {
-      document.getElementById("mainbuttons").style.display = "none";
-      document.getElementById("colorbuttons").style.display = "block";
+    let colorBucket = document.getElementById("colorbucket");
+    let mainButtonsDiv = document.getElementById("mainbuttons");
+    let colorButtonsDiv = document.getElementById("colorbuttons");
+    let colorConfirm = document.getElementById("colorconfirm");
+
+    let playerColor = window.localStorage.getItem("playerColor");
+
+    global.color = playerColor ?? "#00b0e1"
+    colorBucket.style.background = playerColor;
+
+    colorBucket.addEventListener("click", () => {
+      mainButtonsDiv.style.display = "none";
+      colorButtonsDiv.style.display = "block";
     });
-    document.getElementById("colorconfirm").addEventListener("click", () => {
-      document.getElementById("colorbuttons").style.display = "none";
-      document.getElementById("mainbuttons").style.display = "block";
+    colorConfirm.addEventListener("click", () => {
+      colorButtonsDiv.style.display = "none";
+      mainButtonsDiv.style.display = "block";
     });
 
     let colorRows = document.getElementById("colorselect").children;
@@ -30,6 +40,8 @@ class Game {
       Array.from(buttons).forEach(button => {
         button.addEventListener("click", () => {
           global.color = global.colors.get(button.id);
+
+          window.localStorage.setItem("playerColor", global.color);
           document.getElementById("colorconfirm").style.background = global.color;
           document.getElementById("colorbucket").style.background = global.color;
         });

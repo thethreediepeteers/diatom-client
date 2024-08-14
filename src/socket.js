@@ -80,15 +80,15 @@ class Socket {
       ids.add(id);
       let entity = global.entities.get(id);
       if (!entity) {
-        entity = { serverData: { x: 0, y: 0, size: 0, angle: 0 }, x: 0, y: 0, size: 0, angle: 0, color: colorStr, dead: false, dying: false, };
+        entity = { serverData: { x: 0, y: 0, angle: 0 }, x: 0, y: 0, size: 0, angle: 0, color: colorStr, scale: 0, dead: false, dying: false, };
         global.entities.set(id, entity);
       }
 
       entity.index = id;
       entity.serverData.x = pos.x;
       entity.serverData.y = pos.y;
-      entity.serverData.size = size;
       entity.serverData.angle = angle;
+      entity.size = size;
       entity.color = colorStr;
       entity.shape = shape;
       entity.mockupId = mockupId

@@ -10,7 +10,7 @@ const global = {
   target: { x: 0, y: 0 },
   mockups: new Map(),
   colors: new Map(),
-  color: "#00b0e1",
+  color: "",
 }
 
 global.colors.set("col1", "#00b0e1");

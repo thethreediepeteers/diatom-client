@@ -38,14 +38,18 @@ const drawEntities = (px, py) => {
     entity.x = lerp(entity.x, entity.serverData.x, 0.2);
     entity.y = lerp(entity.y, entity.serverData.y, 0.2);
 
-    let sizeVal = entity.serverData.size;
+    let scaleTo = 1;
     if (entity.dying) {
-      sizeVal = 0;
-      if (entity.size === 0) {
-        entity.dying = false; entity.dead = true;
+      scaleTo = 0;
+
+      if (entity.scale < 0.01) {
+        entity.dying = false;
+        entity.dead = true;
+        continue;
       }
     }
-    entity.size = lerp(entity.size, sizeVal, 0.2);
+
+    entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
     let x = entity.x - px;
@@ -63,14 +67,14 @@ const drawEntities = (px, py) => {
     for (let gun of mockup.guns) {
       let gx = gun.offset * Math.cos(gun.direction + gun.angle + entity.angle);
       let gy = gun.offset * Math.sin(gun.direction + gun.angle + entity.angle);
-      drawTrapezoid(x + gx, y + gy, gun.length, gun.width, entity.angle + gun.angle, gun.aspect, "#808080");
+      drawTrapezoid(x + gx, y + gy, gun.length * entity.scale, gun.width * entity.scale, entity.angle + gun.angle, gun.aspect, "#808080");
     }
 
-    drawEntity(x, y, entity.size, mockup.shape, entity.angle, entity.color);
+    drawEntity(x, y, entity.size * entity.scale, mockup.shape, entity.angle, entity.color);
 
     // draw turrets above
     for (let turret of mockup.turrets) {
-      drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, entity.angle + turret.angle, "#808080");
+      drawPoly(turret.x + x, turret.y + y, turret.size * entity.scale, turret.shape, entity.angle + turret.angle, "#808080");
     }
   }
 }
