@@ -35,8 +35,8 @@ const drawEntities = (px, py) => {
     if (entity.dead) continue;
     let mockup = global.mockups.get(entity.mockupId);
 
-    entity.x = lerp(entity.x, entity.serverData.x, 0.2);
-    entity.y = lerp(entity.y, entity.serverData.y, 0.2);
+    entity.x = entity.x === 0 ? entity.serverData.x : lerp(entity.x, entity.serverData.x, 0.2);
+    entity.y = entity.y === 0 ? entity.serverData.y : lerp(entity.y, entity.serverData.y, 0.2);
 
     let scaleTo = 1;
     if (entity.dying) {
