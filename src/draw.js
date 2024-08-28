@@ -67,7 +67,7 @@ const drawEntities = (px, py) => {
   if (entity.dying) {
     scaleTo = 0;
 
-    if (entity.scale < 0.01) {
+    if (entity.scale < 0.1) {
       entity.dying = false;
       entity.dead = true;
       return;
