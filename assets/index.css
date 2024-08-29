@@ -21,7 +21,19 @@ body {
 }
 
 #startmenu {
+  /* display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  animation: slideDown 0.65s ease-out forwards;
+  background: #c9c9c9; */
   display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   align-items: center;
   justify-content: center;
   flex-direction: column;
@@ -36,9 +48,20 @@ body {
   opacity: 1;
 }
 
+.title-container {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-bottom: -6px;
+}
+
 #icon,
 .title {
-  margin-top: -120px;
+  /* margin-top: -120px;
+  transition: transform 0.1s; */
   transition: transform 0.1s;
 }
 
@@ -64,7 +87,12 @@ canvas {
 }
 
 #icon {
-  width: 125px;
+  /* width: 125px; */
+  width: auto;
+  height: clamp(62.5px, 100vh - 25vw, 125px);
+  /* if clamp starts to cause issues, remove it and add 100% instead */
+  min-height: 62.5px;
+  max-height: 125px;
 }
 
 .title {
@@ -78,8 +106,13 @@ canvas {
 }
 
 #buttons {
-  position: absolute;
-  top: 420px;
+  /* position: absolute;
+  top: 420px; */
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .card,
