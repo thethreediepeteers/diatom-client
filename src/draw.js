@@ -27,7 +27,9 @@ const drawDisconnected = () => {
 const drawEntities = (px, py) => {
   let player = global.player;
   let playerMockup = global.mockups.get(player.mockupId);
-  if (!global || !playerMockup) return;
+  if (!global || !playerMockup) {
+    return;
+  };
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
 
@@ -36,8 +38,10 @@ const drawEntities = (px, py) => {
     if (entity.dead) continue;
     let mockup = global.mockups.get(entity.mockupId);
 
-    entity.x = entity.x === 0 ? entity.serverData.x : lerp(entity.x, entity.serverData.x, 0.2);
-    entity.y = entity.y === 0 ? entity.serverData.y : lerp(entity.y, entity.serverData.y, 0.2);
+    const targetX = entity.x === 0 ? entity.serverData.x : lerp(entity.x, entity.serverData.x, 0.2);
+    const targetY = entity.y === 0 ? entity.serverData.y : lerp(entity.y, entity.serverData.y, 0.2);
+    entity.x = targetX;
+    entity.y = targetY;
 
     let scaleTo = 1;
     if (entity.dying) {
@@ -63,6 +67,10 @@ const drawEntities = (px, py) => {
   }
 
   let entity = global.entities.get(global.index);
+  if (entity.dead) {
+    console.log("i am dead, please respawn");
+    return;
+  }
   let scaleTo = 1;
   if (entity.dying) {
     scaleTo = 0;

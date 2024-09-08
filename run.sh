@@ -1,1 +1,1 @@
-python -m http.server 8080
+static -p 8080
