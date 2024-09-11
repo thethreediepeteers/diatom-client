@@ -12,6 +12,8 @@ function calculateMouse() {
 class Game {
   constructor() {
     this.canvas = new Canvas();
+    this.protocol = "http";
+    this.ip = "192.168.100.235";
   }
 
   init() {
@@ -55,7 +57,7 @@ class Game {
     document.getElementById("startmenu").style.display = "none";
 
     this.loadMockups();
-    global.socket = new Socket(`http://localhost:3000/ws?color=${encodeURIComponent(global.color)}`);
+    global.socket = new Socket(`${this.protocol}://${this.ip}:3000/ws?color=${encodeURIComponent(global.color)}`);
     global.socket.init();
     this.canvas.init();
 
@@ -66,7 +68,7 @@ class Game {
   }
 
   loadMockups = () => {
-    let mockupData = fetchAsync("http://localhost:3000/mockups");
+    let mockupData = fetchAsync(`${this.protocol}://${this.ip}:3000/mockups`);
     mockupData.then((hexMockups) => {
       let buffer = new Uint8Array(hexMockups.match(/../g).map(h => parseInt(h, 16))).buffer;
       let view = new DataView(buffer);

@@ -24,6 +24,22 @@ const drawDisconnected = () => {
   ctx.fillText("Disconnected", canvas.width / 2, canvas.height / 2);
 }
 
+const drawHealth = (x, y, health, maxHealth, r, color) => {
+  ctx.beginPath();
+
+  ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2, 10, 5);
+
+  ctx.fillStyle = "grey";
+  ctx.fill();
+
+  ctx.beginPath();
+
+  ctx.fillStyle = color;
+  ctx.roundRect(x - maxHealth + 2, y + r + 12, health - 2 > 0 ? health * 2 : 0, 6, 5);
+
+  ctx.fill();
+}
+
 const drawEntities = (px, py) => {
   let player = global.player;
   let playerMockup = global.mockups.get(player.mockupId);
@@ -42,6 +58,11 @@ const drawEntities = (px, py) => {
     const targetY = entity.y === 0 ? entity.serverData.y : lerp(entity.y, entity.serverData.y, 0.2);
     entity.x = targetX;
     entity.y = targetY;
+
+    const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
+    const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.health, entity.serverData.maxHealth, 0.2);
+    entity.health = targetHealth;
+    entity.maxHealth = targetMhealth;
 
     let scaleTo = 1;
     if (entity.dying) {
@@ -64,6 +85,7 @@ const drawEntities = (px, py) => {
     y += cy;
 
     drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
+    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color);
   }
 
   let entity = global.entities.get(global.index);
@@ -89,6 +111,7 @@ const drawEntities = (px, py) => {
   let y = cy;
 
   drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, playerMockup);
+  drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color);
 }
 
 const drawEntity = (x, y, size, scale, angle, color, mockup) => {
