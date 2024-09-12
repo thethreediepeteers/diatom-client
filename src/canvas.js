@@ -14,12 +14,12 @@ class Canvas {
     this.movement = { up: false, down: false, left: false, right: false };
   }
 
-  resize(width = window.innerWidth, height = window.innerHeight) {
+  resize = (width = window.innerWidth, height = window.innerHeight) => {
     this.cv.width = this.width = global.screenWidth = width * window.devicePixelRatio;
     this.cv.height = this.height = global.screenHeight = height * window.devicePixelRatio;
   }
 
-  init() {
+  init = () => {
     this.cv.style.display = "flex";
     this.cv.focus();
 
@@ -31,16 +31,16 @@ class Canvas {
     this.cv.addEventListener("mousemove", (event) => this.mouseMove(event));
   }
 
-  clear() {
+  clear = () => {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     this.ctx.fillStyle = "#c9c9c9";
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
-  drawGrid(dx, dy, cellSize) {
-
+  drawGrid = (dx, dy, cellSize) => {
     this.ctx.beginPath();
+
     for (let x = dx % cellSize; x < this.width; x += cellSize) {
       this.ctx.moveTo(x, 0);
       this.ctx.lineTo(x, this.height);
@@ -56,7 +56,7 @@ class Canvas {
     this.ctx.stroke();
   }
 
-  calcMovement() {
+  calcMovement = () => {
     const x = this.movement.right - this.movement.left;
     const y = this.movement.down - this.movement.up;
 
@@ -70,7 +70,7 @@ class Canvas {
     }
   }
 
-  keyDown(event) {
+  keyDown = (event) => {
     let changedMovement = false;
 
     switch (event.code) {
@@ -98,7 +98,7 @@ class Canvas {
     if (changedMovement) this.calcMovement();
   }
 
-  keyUp(event) {
+  keyUp = (event) => {
     let changedMovement = false;
 
     switch (event.code) {
@@ -126,7 +126,7 @@ class Canvas {
     if (changedMovement) this.calcMovement();
   }
 
-  handleMouse(button, pressed) {
+  handleMouse = (button, pressed) => {
     switch (button) {
       case 0:
         global.socket.cmd.set(1, pressed);
@@ -137,15 +137,15 @@ class Canvas {
     }
   }
 
-  mouseDown(event) {
+  mouseDown = (event) => {
     this.handleMouse(event.button, true);
   }
 
-  mouseUp(event) {
+  mouseUp = (event) => {
     this.handleMouse(event.button, false);
   }
 
-  mouseMove(event) {
+  mouseMove = (event) => {
     global.mouse.x = event.clientX;
     global.mouse.y = event.clientY;
     global.socket.cmd.talk();

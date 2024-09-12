@@ -3,11 +3,13 @@ import { global } from "./global.js";
 class Socket {
   constructor(addr) {
     this.addr = addr;
+    this.canvas = false;
   }
 
-  init() {
+  init = (canvas) => {
     this.ws = new WebSocket(this.addr);
     this.ws.binaryType = "arraybuffer";
+    this.canvas = canvas;
 
     let flag = false;
     let commands = [
@@ -27,6 +29,7 @@ class Socket {
       talk: () => {
         flag = false;
         let o = 0;
+
         for (let i = 0; i < commands.length; i++) {
           if (commands[i]) o += Math.pow(2, i);
         }
@@ -44,16 +47,23 @@ class Socket {
 
   onopen = () => {
     console.log("Connected to server.");
+
     this.ws.commandCycle = setInterval(() => {
       if (this.cmd.ready()) this.cmd.talk();
     });
 
     let buffer = new ArrayBuffer(4);
     let view = new DataView(buffer);
+
     view.setInt32(0, 1, true);
     this.ws.send(buffer);
 
     global.gameStart = true;
+    if (this.canvas === false) {
+      console.log("Something went wrong");
+    } else {
+      this.canvas.init();
+    }
   }
 
   onmessage = (message) => {
@@ -89,8 +99,9 @@ class Socket {
 
     for (let offset = 0; offset < view.byteLength;) {
       pos.x = view.getFloat64(offset, true);
-      pos.y = view.getFloat64(offset + 8, true);
-      offset += 16;
+      offset += 8;
+      pos.y = view.getFloat64(offset, true);
+      offset += 8;
       const size = view.getFloat32(offset, true);
       offset += 4;
       const angle = view.getFloat32(offset, true);
@@ -106,18 +117,46 @@ class Socket {
       const team = view.getInt32(offset, true);
       offset += 4;
       const shape = view.getUint8(offset, true);
-      offset++;
+      offset += 1;
       color.r = view.getUint8(offset, true);
-      color.g = view.getUint8(offset + 1, true);
-      color.b = view.getUint8(offset + 2, true);
-      offset += 3;
+      offset += 1;
+      color.g = view.getUint8(offset, true);
+      offset += 1;
+      color.b = view.getUint8(offset, true);
+      offset += 1;
 
-      const colorStr = `#${color.r.toString(16).padStart(2, '0')}${color.g.toString(16).padStart(2, '0')}${color.b.toString(16).padStart(2, '0')}`;
+      const colorStr = `#${
+        color.r.toString(16).padStart(2, '0')
+      }${
+        color.g.toString(16).padStart(2, '0')
+      }${
+        color.b.toString(16).padStart(2, '0')
+      }`;
 
       ids.add(id);
+
       let entity = global.entities.get(id);
       if (!entity) {
-        entity = { serverData: { x: 0, y: 0, angle: 0, health: 0, maxHealth: 0 }, x: 0, y: 0, size: 0, angle: 0, health: 0, maxHealth: 0, color: colorStr, team: 0, scale: 0, dead: false, dying: false, };
+        entity = {
+          serverData: {
+            x: 0,
+            y: 0,
+            angle: 0,
+            health: 0,
+            maxHealth: 0
+          },
+          x: 0,
+          y: 0,
+          size: 0,
+          angle: 0,
+          health: 0,
+          maxHealth: 0,
+          color: colorStr,
+          team: 0,
+          scale: 0,
+          dead: false,
+          dying: false
+        };
         global.entities.set(id, entity);
       }
 
@@ -166,7 +205,7 @@ class Socket {
     global.gameStart = false;
   }
 
-  talk(movement, flags) {
+  talk = (movement, flags) => {
     const buffer = new ArrayBuffer(12); // 4 bytes for mouse, 4 bytes for movement, 4 bytes for flags
     const view = new DataView(buffer);
 

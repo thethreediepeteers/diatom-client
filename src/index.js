@@ -1,8 +1,15 @@
 import { Canvas } from "./canvas.js";
 import { Socket } from "./socket.js";
 import { global } from "./global.js";
-import { drawConnecting, drawDisconnected, drawEntities } from "./draw.js";
-import { fetchAsync, lerp } from "./util.js";
+import {
+  drawConnecting,
+  drawDisconnected,
+  drawEntities
+} from "./draw.js";
+import {
+  fetchAsync,
+  lerp
+} from "./util.js";
 
 function calculateMouse() {
   global.target.x = Math.round(global.mouse.x - global.screenWidth / 2);
@@ -13,20 +20,20 @@ class Game {
   constructor() {
     this.canvas = new Canvas();
     this.protocol = "http";
-    this.ip = "192.168.100.235";
+    this.ip = "0.0.0.0";
   }
 
-  init() {
+  init = () => {
     let colorBucket = document.getElementById("colorbucket");
     let mainButtonsDiv = document.getElementById("mainbuttons");
     let colorButtonsDiv = document.getElementById("colorbuttons");
     let colorConfirm = document.getElementById("colorconfirm");
-
+    let colorRows = document.getElementById("colorselect").children;
     let playerColor = window.localStorage.getItem("playerColor");
 
     global.color = playerColor ?? "#00b0e1"
-    colorBucket.style.background = playerColor;
 
+    colorBucket.style.background = playerColor;
     colorBucket.addEventListener("click", () => {
       mainButtonsDiv.style.display = "none";
       colorButtonsDiv.style.display = "block";
@@ -36,9 +43,9 @@ class Game {
       mainButtonsDiv.style.display = "block";
     });
 
-    let colorRows = document.getElementById("colorselect").children;
     Array.from(colorRows).forEach(row => {
       let buttons = row.children;
+
       Array.from(buttons).forEach(button => {
         button.addEventListener("click", () => {
           global.color = global.colors.get(button.id);
@@ -57,24 +64,27 @@ class Game {
     document.getElementById("startmenu").style.display = "none";
 
     this.loadMockups();
+
     global.socket = new Socket(`${this.protocol}://${this.ip}:3000/ws?color=${encodeURIComponent(global.color)}`);
-    global.socket.init();
-    this.canvas.init();
+    global.socket.init(this.canvas);
 
     window.addEventListener("resize", () => this.canvas.resize());
     window.addEventListener("contextmenu", (event) => event.preventDefault());
-
     window.requestAnimationFrame(this.update);
   }
 
   loadMockups = () => {
     let mockupData = fetchAsync(`${this.protocol}://${this.ip}:3000/mockups`);
+
     mockupData.then((hexMockups) => {
       let buffer = new Uint8Array(hexMockups.match(/../g).map(h => parseInt(h, 16))).buffer;
       let view = new DataView(buffer);
 
       for (let offset = 0; offset < view.byteLength;) {
-        let mockup = { guns: [], turrets: [] };
+        let mockup = {
+          guns: [],
+          turrets: []
+        };
 
         let mockupId = view.getInt32(offset, true);
         offset += 4;
@@ -104,7 +114,15 @@ class Game {
           let aspect = view.getFloat32(offset, true);
           offset += 4;
 
-          let gun = { length: gunLength, width: gunWidth, offset: gunOffset, direction: gunDirection, angle: angle, aspect: aspect };
+          let gun = {
+            length: gunLength,
+            width: gunWidth,
+            offset: gunOffset,
+            direction: gunDirection,
+            angle: angle,
+            aspect: aspect
+          };
+
           mockup.guns.push(gun);
         }
 
@@ -123,9 +141,17 @@ class Game {
           let turretShape = view.getUint8(offset, true);
           offset += 1;
 
-          let turret = { size: turretSize, x: turretX, y: turretY, angle: turretAngle, shape: turretShape };
+          let turret = {
+            size: turretSize,
+            x: turretX,
+            y: turretY,
+            angle: turretAngle,
+            shape: turretShape
+          };
+
           mockup.turrets.push(turret);
         }
+
         global.mockups.set(mockupId, mockup);
       }
     });
@@ -153,7 +179,6 @@ class Game {
 
       this.canvas.ctx.fillStyle = "#d9d9d9";
       this.canvas.ctx.fillRect(cx - px, cy - py, global.map.width, global.map.height);
-
       this.canvas.drawGrid(cx - px, cy - py, 32);
 
       drawEntities(px, py);

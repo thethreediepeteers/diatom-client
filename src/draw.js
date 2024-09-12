@@ -1,4 +1,7 @@
-import { lerp, lerpAngle } from "./util.js";
+import {
+  lerp,
+  lerpAngle
+} from "./util.js";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -6,7 +9,7 @@ const ctx = canvas.getContext("2d");
 ctx.lineCap = "round";
 ctx.lineJoin = "round";
 
-const drawConnecting = () => {
+function drawConnecting() {
   ctx.font = "bold 48px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -15,7 +18,7 @@ const drawConnecting = () => {
   ctx.fillText("Connecting...", canvas.width / 2, canvas.height / 2);
 }
 
-const drawDisconnected = () => {
+function drawDisconnected() {
   ctx.font = "bold 48px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -24,25 +27,24 @@ const drawDisconnected = () => {
   ctx.fillText("Disconnected", canvas.width / 2, canvas.height / 2);
 }
 
-const drawHealth = (x, y, health, maxHealth, r, color) => {
+function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.beginPath();
 
-  ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2, 10, 5);
-
   ctx.fillStyle = "grey";
+  ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2, 10, 5);
   ctx.fill();
 
   ctx.beginPath();
 
   ctx.fillStyle = color;
-  ctx.roundRect(x - maxHealth + 2, y + r + 12, health - 2 > 0 ? health * 2 : 0, 6, 5);
-
+  ctx.roundRect(x - maxHealth + 2, y + r + 12, health - 2 > 0 ? health * 2 - 4 : 0, 6, 5);
   ctx.fill();
 }
 
-const drawEntities = (px, py) => {
+function drawEntities(px, py) {
   let player = global.player;
   let playerMockup = global.mockups.get(player.mockupId);
+
   if (!global || !playerMockup) {
     return;
   };
@@ -50,8 +52,13 @@ const drawEntities = (px, py) => {
   const cx = canvas.width / 2, cy = canvas.height / 2;
 
   for (let [id, entity] of global.entities) {
-    if (id === global.index) continue;
-    if (entity.dead) continue;
+    if (entity.dead) {
+      if (id === global.index) {
+        console.log("I am dead, please respawn");
+      }
+      continue;
+    }
+
     let mockup = global.mockups.get(entity.mockupId);
 
     const targetX = entity.x === 0 ? entity.serverData.x : lerp(entity.x, entity.serverData.x, 0.2);
@@ -71,6 +78,7 @@ const drawEntities = (px, py) => {
       if (entity.scale < 0.01) {
         entity.dying = false;
         entity.dead = true;
+
         continue;
       }
     }
@@ -81,44 +89,26 @@ const drawEntities = (px, py) => {
     let x = entity.x - px;
     let y = entity.y - py;
 
-    x += cx;
-    y += cy;
+    if (id === global.index) {
+      x = cx;
+      y = cy;
+    }
+    else {
+      x += cx;
+      y += cy;
+    }
 
     drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
     drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color);
   }
-
-  let entity = global.entities.get(global.index);
-  if (entity.dead) {
-    console.log("i am dead, please respawn");
-    return;
-  }
-  let scaleTo = 1;
-  if (entity.dying) {
-    scaleTo = 0;
-
-    if (entity.scale < 0.1) {
-      entity.dying = false;
-      entity.dead = true;
-      return;
-    }
-  }
-
-  entity.scale = lerp(entity.scale, scaleTo, 0.2);
-  entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
-
-  let x = cx;
-  let y = cy;
-
-  drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, playerMockup);
-  drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color);
 }
 
-const drawEntity = (x, y, size, scale, angle, color, mockup) => {
+function drawEntity(x, y, size, scale, angle, color, mockup) {
   // draw guns below 
   for (let gun of mockup.guns) {
     let gx = gun.offset * Math.cos(gun.direction + gun.angle + angle);
     let gy = gun.offset * Math.sin(gun.direction + gun.angle + angle);
+
     drawTrapezoid(x + gx, y + gy, gun.length * scale, gun.width * scale, angle + gun.angle, gun.aspect, "#808080");
   }
 
@@ -144,8 +134,9 @@ function offsetHex(hex) {
   const newG = clamp(g - 32, 0, 255);
   const newB = clamp(b - 32, 0, 255);
 
-  const toHex = (comp) => {
+  function toHex(comp) {
     const hex = comp.toString(16);
+
     return hex.length === 1 ? `0${hex}` : hex;
   }
 
@@ -154,23 +145,22 @@ function offsetHex(hex) {
   return newHex;
 }
 
-const drawTrapezoid = (x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) => {
+function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
   let h = aspect > 0 ? [width * aspect, width] : [width, -width / aspect];
-
   let points = [
     [0, h[1]],
     [length * 2, h[0]],
     [length * 2, -h[0]],
     [0, -h[1]]
   ];
-
   let sinT = Math.sin(angle);
   let cosT = Math.cos(angle);
 
   ctx.beginPath();
   for (let point of points) {
-    let newX = point[0] * cosT - point[1] * sinT + x,
-      newY = point[0] * sinT + point[1] * cosT + y;
+    let newX = point[0] * cosT - point[1] * sinT + x;
+    let newY = point[0] * sinT + point[1] * cosT + y;
+
     ctx.lineTo(newX, newY);
   }
   ctx.closePath();
@@ -182,7 +172,7 @@ const drawTrapezoid = (x, y, length, width, angle, aspect, color, strokeColor = 
   ctx.stroke();
 }
 
-const drawPoly = (x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) => {
+function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) {
   angle += shape % 2 ? 0 : Math.PI / shape;
 
   ctx.beginPath();
@@ -192,8 +182,10 @@ const drawPoly = (x, y, radius, shape, angle, color, strokeColor = offsetHex(col
   } else {
     // polygon
     angle += (shape % 1) * Math.PI * 2;
+
     for (let i = 0; i < shape; i++) {
       let theta = (i / shape) * 2 * Math.PI + angle;
+
       ctx.lineTo(x + radius * Math.cos(theta), y + radius * Math.sin(theta));
     }
   }
@@ -208,4 +200,8 @@ const drawPoly = (x, y, radius, shape, angle, color, strokeColor = offsetHex(col
   ctx.stroke();
 }
 
-export { drawConnecting, drawDisconnected, drawEntities };
+export {
+  drawConnecting,
+  drawDisconnected,
+  drawEntities
+};
