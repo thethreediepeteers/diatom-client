@@ -27,17 +27,17 @@ function drawDisconnected() {
   ctx.fillText("Disconnected", canvas.width / 2, canvas.height / 2);
 }
 
-function drawHealth(x, y, health, maxHealth, r, color) {
+function drawHealth(x, y, health, maxHealth, r, color, scale) {
   ctx.beginPath();
 
-  ctx.fillStyle = "grey";
-  ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2, 10, 5);
+  ctx.fillStyle = offsetHex(color);
+  ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2 * scale, 10 * scale, 5);
   ctx.fill();
 
   ctx.beginPath();
 
   ctx.fillStyle = color;
-  ctx.roundRect(x - maxHealth + 2, y + r + 12, health - 2 > 0 ? health * 2 - 4 : 0, 6, 5);
+  ctx.roundRect(x - maxHealth + 2, y + r + 12, (health * 2 - 4) * scale, 6 * scale, 5);
   ctx.fill();
 }
 
@@ -67,7 +67,7 @@ function drawEntities(px, py) {
     entity.y = targetY;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
-    const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.health, entity.serverData.maxHealth, 0.2);
+    const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
     entity.health = targetHealth;
     entity.maxHealth = targetMhealth;
 
@@ -99,7 +99,7 @@ function drawEntities(px, py) {
     }
 
     drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
-    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color);
+    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.scale);
   }
 }
 

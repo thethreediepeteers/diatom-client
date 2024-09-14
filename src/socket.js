@@ -31,7 +31,7 @@ class Socket {
         let o = 0;
 
         for (let i = 0; i < commands.length; i++) {
-          if (commands[i]) o += Math.pow(2, i);
+          if (commands[i]) o |= (1 << i);
         }
 
         this.talk(global.movement, o);
@@ -69,132 +69,126 @@ class Socket {
   onmessage = (message) => {
     const view = new DataView(message.data);
 
-    if (view.byteLength === 4) {
-      // player id
-      const id = view.getUint32(0, true);
-      global.index = id;
+    let o = 0;
+    const messageType = String.fromCharCode(view.getUint8(o++, true));
 
-      return;
+    switch (messageType) {
+      case 's': // spawn data
+        const id = view.getUint32(o, true);
+        global.index = id;
+        break;
+
+      case 'm': // map data
+        const map = { width: view.getUint32(o, true), height: view.getUint32(o + 4, true) };
+
+        global.map.serverData.width = map.width;
+        global.map.serverData.height = map.height;
+        break;
+
+      case 'u': // update message
+        const ids = new Set();
+
+        const pos = { x: 0, y: 0 };
+        const color = { r: 0, g: 0, b: 0 };
+
+        for (let offset = o; offset < view.byteLength;) {
+          pos.x = view.getFloat64(offset, true);
+          offset += 8;
+          pos.y = view.getFloat64(offset, true);
+          offset += 8;
+          const size = view.getFloat32(offset, true);
+          offset += 4;
+          const angle = view.getFloat32(offset, true);
+          offset += 4;
+          const id = view.getInt32(offset, true);
+          offset += 4;
+          const mockupId = view.getInt32(offset, true);
+          offset += 4;
+          const health = view.getInt32(offset, true);
+          offset += 4;
+          const maxHealth = view.getInt32(offset, true);
+          offset += 4;
+          const team = view.getInt32(offset, true);
+          offset += 4;
+          const shape = view.getUint8(offset, true);
+          offset += 1;
+          color.r = view.getUint8(offset, true);
+          offset += 1;
+          color.g = view.getUint8(offset, true);
+          offset += 1;
+          color.b = view.getUint8(offset, true);
+          offset += 1;
+
+          const colorStr = `#${color.r.toString(16).padStart(2, '0')
+            }${color.g.toString(16).padStart(2, '0')
+            }${color.b.toString(16).padStart(2, '0')
+            }`;
+
+          ids.add(id);
+
+          let entity = global.entities.get(id);
+          if (!entity) {
+            entity = {
+              serverData: {
+                x: 0,
+                y: 0,
+                angle: 0,
+                health: 0,
+                maxHealth: 0
+              },
+              x: 0,
+              y: 0,
+              size: 0,
+              angle: 0,
+              health: 0,
+              maxHealth: 0,
+              color: colorStr,
+              team: 0,
+              scale: 0,
+              dead: false,
+              dying: false
+            };
+            global.entities.set(id, entity);
+          }
+
+          entity.index = id;
+          entity.serverData.x = pos.x;
+          entity.serverData.y = pos.y;
+          entity.serverData.angle = angle;
+          entity.serverData.health = health;
+          entity.serverData.maxHealth = maxHealth;
+          entity.size = size;
+          entity.color = colorStr;
+          entity.shape = shape;
+          entity.team = team;
+          entity.mockupId = mockupId;
+
+          if (id === global.index) {
+            global.player.x = pos.x;
+            global.player.y = pos.y;
+            global.player.size = size;
+            global.player.angle = angle;
+            global.player.color = colorStr;
+            global.player.shape = shape;
+            global.player.health = health;
+            global.player.maxHealth = maxHealth;
+            global.player.team = team;
+            global.player.mockupId = mockupId;
+          }
+        }
+
+        for (let [id, entity] of global.entities) {
+          if (!ids.has(id)) {
+            entity.dying = true;
+          }
+        }
+
+        global.entities = new Map([...global.entities].filter(([id, entity]) => {
+          return ids.has(id) || !entity.dead || id === global.index;
+        }));
+
+        break;
     }
-
-    else if (view.byteLength === 8) {
-      // map message
-      const map = { width: view.getUint32(0, true), height: view.getUint32(4, true) };
-
-      global.map.serverData.width = map.width;
-      global.map.serverData.height = map.height;
-
-      return;
-    }
-
-    const ids = new Set();
-    const entitySize = 48;
-
-    if (view.byteLength % entitySize !== 0) {
-      return;
-    }
-
-    const pos = { x: 0, y: 0 };
-    const color = { r: 0, g: 0, b: 0 };
-
-    for (let offset = 0; offset < view.byteLength;) {
-      pos.x = view.getFloat64(offset, true);
-      offset += 8;
-      pos.y = view.getFloat64(offset, true);
-      offset += 8;
-      const size = view.getFloat32(offset, true);
-      offset += 4;
-      const angle = view.getFloat32(offset, true);
-      offset += 4;
-      const id = view.getInt32(offset, true);
-      offset += 4;
-      const mockupId = view.getInt32(offset, true);
-      offset += 4;
-      const health = view.getInt32(offset, true);
-      offset += 4;
-      const maxHealth = view.getInt32(offset, true);
-      offset += 4;
-      const team = view.getInt32(offset, true);
-      offset += 4;
-      const shape = view.getUint8(offset, true);
-      offset += 1;
-      color.r = view.getUint8(offset, true);
-      offset += 1;
-      color.g = view.getUint8(offset, true);
-      offset += 1;
-      color.b = view.getUint8(offset, true);
-      offset += 1;
-
-      const colorStr = `#${
-        color.r.toString(16).padStart(2, '0')
-      }${
-        color.g.toString(16).padStart(2, '0')
-      }${
-        color.b.toString(16).padStart(2, '0')
-      }`;
-
-      ids.add(id);
-
-      let entity = global.entities.get(id);
-      if (!entity) {
-        entity = {
-          serverData: {
-            x: 0,
-            y: 0,
-            angle: 0,
-            health: 0,
-            maxHealth: 0
-          },
-          x: 0,
-          y: 0,
-          size: 0,
-          angle: 0,
-          health: 0,
-          maxHealth: 0,
-          color: colorStr,
-          team: 0,
-          scale: 0,
-          dead: false,
-          dying: false
-        };
-        global.entities.set(id, entity);
-      }
-
-      entity.index = id;
-      entity.serverData.x = pos.x;
-      entity.serverData.y = pos.y;
-      entity.serverData.angle = angle;
-      entity.serverData.health = health;
-      entity.serverData.maxHealth = maxHealth;
-      entity.size = size;
-      entity.color = colorStr;
-      entity.shape = shape;
-      entity.team = team;
-      entity.mockupId = mockupId;
-
-      if (id === global.index) {
-        global.player.x = pos.x;
-        global.player.y = pos.y;
-        global.player.size = size;
-        global.player.angle = angle;
-        global.player.color = colorStr;
-        global.player.shape = shape;
-        global.player.health = health;
-        global.player.maxHealth = maxHealth;
-        global.player.team = team;
-        global.player.mockupId = mockupId;
-      }
-    }
-
-    for (let [id, entity] of global.entities) {
-      if (!ids.has(id)) {
-        entity.dying = true;
-      }
-    }
-
-    global.entities = new Map([...global.entities].filter(([id, entity]) => {
-      return ids.has(id) || !entity.dead || id === global.index;
-    }));
   }
 
   onclose = () => {
