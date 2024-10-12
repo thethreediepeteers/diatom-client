@@ -52,14 +52,14 @@ class Socket {
       if (this.cmd.ready()) this.cmd.talk();
     });
 
-    let buffer = new ArrayBuffer(4);
+    let buffer = new ArrayBuffer(1);
     let view = new DataView(buffer);
 
-    view.setInt32(0, 1, true);
+    view.setInt8(0, "s".charCodeAt(0), true); // spawn header
     this.ws.send(buffer);
 
     global.gameStart = true;
-    if (this.canvas === false) {
+    if (!this.canvas) {
       console.log("Something went wrong");
     } else {
       this.canvas.init();
@@ -76,6 +76,7 @@ class Socket {
       case 's': // spawn data
         const id = view.getUint32(o, true);
         global.index = id;
+        console.log(view);
         break;
 
       case 'm': // map data
@@ -200,13 +201,14 @@ class Socket {
   }
 
   talk = (movement, flags) => {
-    const buffer = new ArrayBuffer(12); // 4 bytes for mouse, 4 bytes for movement, 4 bytes for flags
+    const buffer = new ArrayBuffer(13); // 1 byte for header, 4 bytes for mouse, 4 bytes for movement, 4 bytes for flags
     const view = new DataView(buffer);
 
-    view.setInt16(0, global.target.x, true);
-    view.setInt16(2, global.target.y, true);
-    view.setFloat32(4, movement, true);
-    view.setUint32(8, flags, true);
+    view.setInt8(0, "m".charCodeAt(0), true); // update header
+    view.setInt16(1, global.target.x, true);
+    view.setInt16(3, global.target.y, true);
+    view.setFloat32(5, movement, true);
+    view.setUint32(9, flags, true);
 
     this.ws.send(buffer);
   }

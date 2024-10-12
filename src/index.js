@@ -65,7 +65,7 @@ class Game {
 
     this.loadMockups();
 
-    global.socket = new Socket(`${this.protocol}://${this.ip}:3000/ws?color=${encodeURIComponent(global.color)}`);
+    global.socket = new Socket(`${this.protocol === "http" ? "ws" : "wss"}://${this.ip}:3000/ws?color=${encodeURIComponent(global.color)}`);
     global.socket.init(this.canvas);
 
     window.addEventListener("resize", () => this.canvas.resize());
