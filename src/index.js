@@ -76,83 +76,85 @@ class Game {
   loadMockups = () => {
     let mockupData = fetchAsync(`${this.protocol}://${this.ip}:3000/mockups`);
 
-    mockupData.then((hexMockups) => {
+    const TYPE_NUM = 0x01;
+    const TYPE_STRING = 0x02;
+    const TYPE_STARTTABLE = 0x03;
+    const TYPE_ENDTABLE = 0x04;
+    const TYPE_ARRAY = 0x05;
+
+    mockupData.then(hexMockups => {
       let buffer = new Uint8Array(hexMockups.match(/../g).map(h => parseInt(h, 16))).buffer;
       let view = new DataView(buffer);
 
-      for (let offset = 0; offset < view.byteLength;) {
-        let mockup = {
-          guns: [],
-          turrets: []
-        };
+      let offset = 0;
 
-        let mockupId = view.getInt32(offset, true);
-        offset += 4;
-        let size = view.getFloat32(offset, true);
-        offset += 4;
-        let shape = view.getUint8(offset, true);
-        offset += 1;
+      function readUint8() {
+        return view.getUint8(offset++, true);
+      }
 
-        mockup.id = mockupId;
-        mockup.size = size;
-        mockup.shape = shape;
+      function readDouble() {
+        let value = view.getFloat64(offset, true);
+        offset += 8;
+        return value;
+      }
 
-        let gunsSize = view.getInt32(offset, true);
-        offset += 4;
+      function readString() {
+        const length = readUint8();
+        const chars = new Array(length);
+        for (let i = 0; i < length; i++) {
+          chars[i] = String.fromCharCode(readUint8());
+        }
+        return chars.join('');
+      }
 
-        for (let i = 0; i < gunsSize; i++) {
-          let gunLength = view.getFloat32(offset, true);
-          offset += 4;
-          let gunWidth = view.getFloat32(offset, true);
-          offset += 4;
-          let gunOffset = view.getFloat32(offset, true);
-          offset += 4;
-          let gunDirection = view.getFloat32(offset, true);
-          offset += 4;
-          let angle = view.getFloat32(offset, true);
-          offset += 4;
-          let aspect = view.getFloat32(offset, true);
-          offset += 4;
+      function parseTable() {
+        const obj = {};
+        const arr = [];
 
-          let gun = {
-            length: gunLength,
-            width: gunWidth,
-            offset: gunOffset,
-            direction: gunDirection,
-            angle: angle,
-            aspect: aspect
-          };
+        let isArray = false;
 
-          mockup.guns.push(gun);
+        while (offset < view.byteLength) {
+          const keyType = readUint8();
+
+          if (keyType === TYPE_ENDTABLE) {
+            break;
+          }
+
+          let key;
+          if (keyType === TYPE_ARRAY) {
+            isArray = true;
+          }
+          else {
+            key = readString();
+          }
+
+          const valueType = readUint8();
+
+          let value;
+          if (valueType === TYPE_NUM) {
+            value = readDouble();
+          }
+          else if (valueType === TYPE_STRING) {
+            value = readString();
+          }
+          else if (valueType === TYPE_STARTTABLE) {
+            value = parseTable();
+          }
+
+          if (isArray) {
+            arr.push(value);
+          } else {
+            obj[key] = value;
+          }
         }
 
-        let turretsSize = view.getInt32(offset, true);
-        offset += 4;
+        return isArray ? arr : obj;
+      }
 
-        for (let i = 0; i < turretsSize; i++) {
-          let turretX = view.getFloat32(offset, true);
-          offset += 4;
-          let turretY = view.getFloat32(offset, true);
-          offset += 4;
-          let turretSize = view.getFloat32(offset, true);
-          offset += 4;
-          let turretAngle = view.getFloat32(offset, true);
-          offset += 4;
-          let turretShape = view.getUint8(offset, true);
-          offset += 1;
-
-          let turret = {
-            size: turretSize,
-            x: turretX,
-            y: turretY,
-            angle: turretAngle,
-            shape: turretShape
-          };
-
-          mockup.turrets.push(turret);
-        }
-
-        global.mockups.set(mockupId, mockup);
+      for (let mockup of parseTable()) {
+        if (!mockup.guns) mockup.guns = [];
+        if (!mockup.turrets) mockup.turrets = [];
+        global.mockups.set(mockup.id, mockup);
       }
     });
   }

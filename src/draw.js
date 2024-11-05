@@ -106,6 +106,12 @@ function drawEntities(px, py) {
 function drawEntity(x, y, size, scale, angle, color, mockup) {
   // draw guns below 
   for (let gun of mockup.guns) {
+    if (gun.offset === undefined) {
+      gun.offset = Math.sqrt(Math.pow(gun.xOffset ?? 0, 2) + Math.pow(gun.yOffset ?? 0, 2));
+      gun.direction = Math.atan2(gun.xOffset ?? 0, gun.yOffset ?? 0);
+      gun.angle = (gun.angle ?? 0) * Math.PI / 180;
+    }
+
     let gx = gun.offset * Math.cos(gun.direction + gun.angle + angle);
     let gy = gun.offset * Math.sin(gun.direction + gun.angle + angle);
 
