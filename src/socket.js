@@ -40,10 +40,10 @@ class Socket {
       ready: () => flag
     }
 
-    this.ws.onopen = this.onopen;
-    this.ws.onmessage = this.onmessage;
-    this.ws.onclose = this.onclose;
-    this.ws.onerror = this.onclose;
+    this.ws.onopen = this.onopen.bind(this);
+    this.ws.onmessage = this.onmessage.bind(this);
+    this.ws.onclose = this.onclose.bind(this);
+    this.ws.onerror = this.onclose.bind(this);
   }
 
   onopen: () => {
