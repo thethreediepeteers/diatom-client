@@ -61,10 +61,17 @@ function drawEntities(px, py) {
 
     let mockup = global.mockups.get(entity.mockupId);
 
-    const targetX = entity.x === 0 ? entity.serverData.x : lerp(entity.x, entity.serverData.x, 0.2);
-    const targetY = entity.y === 0 ? entity.serverData.y : lerp(entity.y, entity.serverData.y, 0.2);
-    entity.x = targetX;
-    entity.y = targetY;
+    const distX = entity.serverData.x - entity.x;
+    const distY = entity.serverData.y - entity.y;
+
+    // TODO: Save deltaTime to global
+    const interpolateRate = Math.min(1.7, 16.7 / 170); 
+
+    const targetX = entity.x + distX * interpolateRate;
+    const targetY = entity.y + distY * interpolateRate;
+    
+    entity.x = targetX || entity.serverData.x;
+    entity.y = targetY || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
