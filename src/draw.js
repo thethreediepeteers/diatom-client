@@ -63,7 +63,7 @@ function drawEntities(px, py) {
 
     const distX = entity.serverData.x - entity.x;
     const distY = entity.serverData.y - entity.y;
-    const tooFar = Math.hypot(distX, distY) > 50;
+    const tooFar = Math.hypot(distX, distY) > 150;
 
     const interpolateRate = Math.min(1.7, (global.deltaTime || 0) / 170); 
 
