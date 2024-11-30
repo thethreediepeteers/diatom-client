@@ -6,7 +6,7 @@ class Socket {
     this.canvas = false;
   }
 
-  init: canvas => {
+  init(canvas) {
     this.ws = new WebSocket(this.addr);
     this.ws.binaryType = "arraybuffer";
     this.canvas = canvas;
@@ -46,7 +46,7 @@ class Socket {
     this.ws.onerror = this.onclose.bind(this);
   }
 
-  onopen: () => {
+  onopen() {
     console.log("Connected to server.");
 
     this.ws.commandCycle = setInterval(() => {
@@ -67,7 +67,7 @@ class Socket {
     }
   }
 
-  onmessage: message => {
+  onmessage(message) {
     const view = new DataView(message.data);
 
     let o = 0;
@@ -193,7 +193,7 @@ class Socket {
     }
   }
 
-  onclose: () => {
+  onclose() {
     console.log("Connection closed.");
     clearInterval(this.ws.commandCycle);
 
@@ -201,7 +201,7 @@ class Socket {
     global.gameStart = false;
   }
 
-  talk: (movement, flags) => {
+  talk(movement, flags) {
     const buffer = new ArrayBuffer(13); // 1 byte for header, 4 bytes for mouse, 4 bytes for movement, 4 bytes for flags
     const view = new DataView(buffer);
 
