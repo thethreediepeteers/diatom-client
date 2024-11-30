@@ -19,14 +19,14 @@ class Socket {
     ];
 
     this.cmd = {
-      set(index, value) {
+      set: (index, value) => {
         if (commands[index] !== value || index === 0) {
           commands[index] = value;
           flag = true;
         }
       },
 
-      talk() {
+      talk: () => {
         flag = false;
         let o = 0;
 
