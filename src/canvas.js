@@ -12,7 +12,6 @@ class Canvas {
     this.ctx = this.cv.getContext("2d");
 
     this.movement = { up: false, down: false, left: false, right: false };
-    this.sensivity = 3;
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
@@ -26,10 +25,6 @@ class Canvas {
 
     this.cv.addEventListener("keydown", this.keyDown.bind(this));
     this.cv.addEventListener("keyup", this.keyUp.bind(this));
-
-    this.cv.addEventListener("click", async () => {
-      await this.cv.requestPointerLock();
-    });
 
     this.cv.addEventListener("mousedown", this.mouseDown.bind(this));
     this.cv.addEventListener("mouseup", this.mouseUp.bind(this));
@@ -145,8 +140,8 @@ class Canvas {
   }
 
   mouseMove(event) {
-    global.mouse.x = (global.mouse.x + event.movementX * this.sensivity) || 0;
-    global.mouse.y = (global.mouse.y + event.movementY * this.sensivity) || 0;
+    global.mouse.x = event.clientX;
+    global.mouse.y = event.clientY;
     
     global.socket.cmd.talk();
   }
