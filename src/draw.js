@@ -43,6 +43,15 @@ function drawHealth(x, y, health, maxHealth, r, color, scale) {
 
 function drawEntities(px, py) {
   let player = global.player;
+
+  const cost = player.serverX - player.xOld;
+  const sint = player.serverY - player.yOld;
+
+  const interpolationLevel = global.deltaTime / 2;
+
+  player.x = (player.x || player.serverX) + cost * interpolationLevel;
+  player.y = (player.y || player.serverY) + sint * interpolationLevel;
+  
   let playerMockup = global.mockups.get(player.mockupId);
 
   if (!global || !playerMockup) {
