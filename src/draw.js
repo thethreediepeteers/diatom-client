@@ -63,6 +63,7 @@ function drawEntities(px, py) {
 
     const distX = entity.serverData.x - entity.xOld;
     const distY = entity.serverData.y - entity.yOld;
+    const tooFar = Math.hypot(distX, distY) > 150;
 
     // TODO: Save deltaTime to global
     const interpolateRate = Math.min(0.5, global.deltaTime / 50); 
@@ -70,10 +71,8 @@ function drawEntities(px, py) {
     const targetX = entity.x + distX * interpolateRate;
     const targetY = entity.y + distY * interpolateRate;
 
-    console.log(targetX, targetY, distX, distY, interpolateRate, entity.xOld, entity.yOld);
-    
-    entity.x = targetX || entity.serverData.x;
-    entity.y = targetY || entity.serverData.y;
+    entity.x = (tooFar ? entity.serverData.x : targetX) || entity.serverData.x;
+    entity.y = (tooFar ? entity.serverData.y : targetY) || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
