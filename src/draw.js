@@ -6,6 +6,8 @@ import {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+let camX = 0, camY = 0;
+
 ctx.lineCap = "round";
 ctx.lineJoin = "round";
 
@@ -58,14 +60,29 @@ function drawEntities(px, py) {
 
   px = player.x;
   py = player.y;
+
+  const tmpDist = Math.hypot(camX - player.x, camY - player.y);
+  const tmpDir = Math.atan2(player.y - camY, player.x - camX);
+  const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
+
+  if (tmpDist > 100) {
+    camX = player.x;
+    camY = player.y;
+  } else {
+    camX += camSpd * Math.cos(tmpDir);
+    camY += camSpd * Math.sin(tmpDir);
+  }
+
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+
+  let yOffset = camY - cy;
+  let xOffset = camX - cx;
   
   let playerMockup = global.mockups.get(player.mockupId);
 
   if (!global || !playerMockup) {
     return;
   };
-
-  const cx = canvas.width / 2, cy = canvas.height / 2;
 
   for (let [id, entity] of global.entities) {
     if (entity.dead) {
@@ -112,8 +129,8 @@ function drawEntities(px, py) {
     entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
-    let x = entity.x - px;
-    let y = entity.y - py;
+    let x = entity.x - xOffset;
+    let y = entity.y - yOffset;
 
     if (id === global.index) {
       x = cx;
