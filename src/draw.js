@@ -61,21 +61,20 @@ function drawEntities(px, py) {
 
     let mockup = global.mockups.get(entity.mockupId);
 
-    const distX = entity.serverData.x - entity.x;
-    const distY = entity.serverData.y - entity.y;
-    const tooFar = Math.hypot(distX, distY) > 150;
+    const distX = entity.serverData.x - entity.xOld;
+    const distY = entity.serverData.y - entity.yOld;
 
-    const interpolateRate = Math.min(0.5, (global.deltaTime || 0) / 50); 
+    // TODO: Save deltaTime to global
+    const interpolateRate = Math.min(1.7, 16.7 / 170); 
 
     const targetX = entity.x + distX * interpolateRate;
     const targetY = entity.y + distY * interpolateRate;
     
-    entity.x = tooFar ? entity.serverData.x : targetX || entity.serverData.x;
-    entity.y = tooFar ? entity.serverData.y : targetY || entity.serverData.y;
+    entity.x = targetX || entity.serverData.x;
+    entity.y = targetY || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
-    
     entity.health = targetHealth;
     entity.maxHealth = targetMhealth;
 
