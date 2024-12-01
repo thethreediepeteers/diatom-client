@@ -123,12 +123,12 @@ function drawEntities(px, py) {
     entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
-    let x = entity.x - player.x - camX;
-    let y = entity.y - player.y - camY;
+    let x = entity.x - player.x + camX;
+    let y = entity.y - player.y + camY;
 
     if (id === global.index) {
-      x = cx - camX;
-      y = cy - camY;
+      x = cx + camX;
+      y = cy + camY;
     } else {
       x += cx;
       y += cy;
