@@ -21,6 +21,8 @@ class Game {
     this.canvas = new Canvas();
     this.protocol = "http";
 
+    console.log(window.location);
+
     if (window.location.hostname === "localhost") {
       this.protocol = "http";
       this.ip = "0.0.0.0";
