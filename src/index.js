@@ -11,6 +11,25 @@ import {
   lerp
 } from "./util.js";
 
+if (location.hostname == "render.com") {
+  WebSocket = new Proxy(WebSocket, {
+    __proto__: null,
+    construct(targetObj, argsArr) {
+      const socket = new targetObj(argsArr[0].replace("0.0.0.0:3000", "diatom-server.onrender.com").replace("ws", "wss"));
+      return socket;
+    }
+  });
+
+  fetch = new Proxy(fetch, {
+    __proto__: null,
+    apply(targetObj, thisObj, argsArr) {
+      argsArr[0] = argsArr[0].replace("http", "https").replace("0.0.0.0:3000", "diatom-server.onrender.com");
+
+      return targetObj.apply(thisObj, argsArr);
+    }
+  })
+}
+
 function calculateMouse() {
   global.target.x = Math.round(global.mouse.x - global.screenWidth / 2);
   global.target.y = Math.round(global.mouse.y - global.screenHeight / 2);
