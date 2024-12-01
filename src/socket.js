@@ -153,6 +153,7 @@ class Socket {
           }
 
           entity.index = id;
+          entity.dt = 0;
           entity.xOld = entity.x || entity.serverData.x;
           entity.yOld = entity.y || entity.serverData.y;
           entity.serverData.x = pos.x;
