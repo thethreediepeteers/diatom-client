@@ -124,14 +124,6 @@ function drawEntities(px, py) {
     let x = entity.x - player.x + camX;
     let y = entity.y - player.y + camY;
 
-    if (id === global.index) {
-      x = cx + camX;
-      y = cy + camY;
-    } else {
-      x += cx;
-      y += cy;
-    }
-
     drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
     drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.scale);
   }
