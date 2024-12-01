@@ -14,31 +14,31 @@ class Canvas {
     this.movement = { up: false, down: false, left: false, right: false };
   }
 
-  resize = (width = window.innerWidth, height = window.innerHeight) => {
+  resize(width = window.innerWidth, height = window.innerHeight) {
     this.cv.width = this.width = global.screenWidth = width * window.devicePixelRatio;
     this.cv.height = this.height = global.screenHeight = height * window.devicePixelRatio;
   }
 
-  init = () => {
+  init() {
     this.cv.style.display = "flex";
     this.cv.focus();
 
-    this.cv.addEventListener("keydown", (event) => this.keyDown(event));
-    this.cv.addEventListener("keyup", (event) => this.keyUp(event));
+    this.cv.addEventListener("keydown", this.keyDown.bind(this));
+    this.cv.addEventListener("keyup", this.keyUp.bind(this));
 
-    this.cv.addEventListener("mousedown", (event) => this.mouseDown(event));
-    this.cv.addEventListener("mouseup", (event) => this.mouseUp(event));
-    this.cv.addEventListener("mousemove", (event) => this.mouseMove(event));
+    this.cv.addEventListener("mousedown", this.mouseDown.bind(this));
+    this.cv.addEventListener("mouseup", this.mouseUp.bind(this));
+    this.cv.addEventListener("mousemove", this.mouseMove.bind(this));
   }
 
-  clear = () => {
+  clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     this.ctx.fillStyle = "#c9c9c9";
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
 
-  drawGrid = (dx, dy, cellSize) => {
+  drawGrid(dx, dy, cellSize) {
     this.ctx.beginPath();
 
     for (let x = dx % cellSize; x < this.width; x += cellSize) {
@@ -56,7 +56,7 @@ class Canvas {
     this.ctx.stroke();
   }
 
-  calcMovement = () => {
+  calcMovement() {
     const x = this.movement.right - this.movement.left;
     const y = this.movement.down - this.movement.up;
 
@@ -70,63 +70,57 @@ class Canvas {
     }
   }
 
-  keyDown = (event) => {
-    let changedMovement = false;
-
+  keyDown(event) {
     switch (event.code) {
       case "KeyW":
         this.movement.up = true;
-        changedMovement = true;
         break;
 
       case "KeyS":
         this.movement.down = true;
-        changedMovement = true;
         break;
 
       case "KeyD":
         this.movement.right = true;
-        changedMovement = true;
         break;
 
       case "KeyA":
         this.movement.left = true;
-        changedMovement = true;
         break;
+
+      default:
+        return;
     }
 
-    if (changedMovement) this.calcMovement();
+    this.calcMovement();
   }
 
-  keyUp = (event) => {
-    let changedMovement = false;
-
+  keyUp(event) {
     switch (event.code) {
       case "KeyW":
         this.movement.up = false;
-        changedMovement = true;
         break;
 
       case "KeyS":
         this.movement.down = false;
-        changedMovement = true;
         break;
 
       case "KeyD":
         this.movement.right = false;
-        changedMovement = true;
         break;
 
       case "KeyA":
         this.movement.left = false;
-        changedMovement = true;
         break;
+
+      default:
+        return;
     }
 
-    if (changedMovement) this.calcMovement();
+    this.calcMovement();
   }
 
-  handleMouse = (button, pressed) => {
+  handleMouse(button, pressed) {
     switch (button) {
       case 0:
         global.socket.cmd.set(1, pressed);
@@ -137,15 +131,15 @@ class Canvas {
     }
   }
 
-  mouseDown = (event) => {
+  mouseDown(event) {
     this.handleMouse(event.button, true);
   }
 
-  mouseUp = (event) => {
+  mouseUp(event) {
     this.handleMouse(event.button, false);
   }
 
-  mouseMove = (event) => {
+  mouseMove(event) {
     global.mouse.x = event.clientX;
     global.mouse.y = event.clientY;
     global.socket.cmd.talk();

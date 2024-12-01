@@ -6,6 +6,8 @@ import {
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+let camX = 0, camY = 0;
+
 ctx.lineCap = "round";
 ctx.lineJoin = "round";
 
@@ -43,13 +45,38 @@ function drawHealth(x, y, health, maxHealth, r, color, scale) {
 
 function drawEntities(px, py) {
   let player = global.player;
+
+  player.dt = (player.dt + global.deltaTime) || 0;
+  
+  const rate = Math.min(1.7, player.dt / 170);
+
+  const distX = player.serverX - player.xOld;
+  const distY = player.serverY - player.yOld;
+  
+  const tooFar = Math.hypot(distX, distY) > 150;
+
+  player.x = (player.xOld + distX * rate) || player.serverX;
+  player.y = (player.yOld + distY * rate) || player.serverY;
+
+  px = player.x;
+  py = player.y;
+
+  const tmpDist = Math.hypot(camX - player.x, camY - player.y);
+  const tmpDir = Math.atan2(player.y - camY, player.x - camX);
+  const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
+
+  camX = camSpd * Math.cos(tmpDir);
+  camY = camSpd * Math.sin(tmpDir);
+
+  console.log(tmpDist, tmpDir, camSpd);
+
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  
   let playerMockup = global.mockups.get(player.mockupId);
 
   if (!global || !playerMockup) {
     return;
   };
-
-  const cx = canvas.width / 2, cy = canvas.height / 2;
 
   for (let [id, entity] of global.entities) {
     if (entity.dead) {
@@ -61,13 +88,23 @@ function drawEntities(px, py) {
 
     let mockup = global.mockups.get(entity.mockupId);
 
-    const targetX = entity.x === 0 ? entity.serverData.x : lerp(entity.x, entity.serverData.x, 0.2);
-    const targetY = entity.y === 0 ? entity.serverData.y : lerp(entity.y, entity.serverData.y, 0.2);
-    entity.x = targetX;
-    entity.y = targetY;
+    const distX = entity.serverData.x - entity.xOld;
+    const distY = entity.serverData.y - entity.yOld;
+    const tooFar = Math.hypot(distX, distY) > 150;
+
+    entity.dt = (entity.dt + global.deltaTime) || 0;
+
+    const rate = Math.min(1.7, entity.dt / 170);
+    
+    const targetX = entity.xOld + distX * rate;
+    const targetY = entity.yOld + distY * rate;
+
+    entity.x = (tooFar ? entity.serverData.x : targetX) || entity.serverData.x;
+    entity.y = (tooFar ? entity.serverData.y : targetY) || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
+    
     entity.health = targetHealth;
     entity.maxHealth = targetMhealth;
 
@@ -86,8 +123,8 @@ function drawEntities(px, py) {
     entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
-    let x = entity.x - px;
-    let y = entity.y - py;
+    let x = entity.x - player.x - camX;
+    let y = entity.y - player.y - camY;
 
     if (id === global.index) {
       x = cx;

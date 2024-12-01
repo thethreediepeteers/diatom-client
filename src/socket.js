@@ -153,6 +153,9 @@ class Socket {
           }
 
           entity.index = id;
+          entity.dt = 0;
+          entity.xOld = entity.x || entity.serverData.x;
+          entity.yOld = entity.y || entity.serverData.y;
           entity.serverData.x = pos.x;
           entity.serverData.y = pos.y;
           entity.serverData.angle = angle;
@@ -165,8 +168,14 @@ class Socket {
           entity.mockupId = mockupId;
 
           if (id === global.index) {
-            global.player.x = pos.x;
-            global.player.y = pos.y;
+            global.player.dt = 0;
+            
+            global.player.xOld = global.player.x;
+            global.player.yOld = global.player.y;
+
+            global.player.serverX = pos.x;
+            global.player.serverY = pos.y;
+            
             global.player.size = size;
             global.player.angle = angle;
             global.player.color = colorStr;

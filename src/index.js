@@ -158,6 +158,8 @@ class Game {
   }
 
   update = () => {
+    global.deltaTime = performance.now() - this.lastUpdate;
+    this.lastUpdate = performance.now();
     global.map.width = lerp(global.map.width, global.map.serverData.width, 0.1);
     global.map.height = lerp(global.map.height, global.map.serverData.height, 0.1);
 
