@@ -109,7 +109,7 @@ function drawEntities(px, py) {
     entity.health = targetHealth;
     entity.maxHealth = targetMhealth;
 
-    entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
+    entity.angle = global.index == entity.index ? global.mouseAngle : lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
     let x = entity.x - xOffset;
     let y = entity.y - yOffset;
