@@ -53,8 +53,8 @@ function drawEntities(px, py) {
   
   const tooFar = Math.hypot(distX, distY) > 150;
 
-  player.x = player.xOld + distX * rate;
-  player.y = player.yOld + distY * rate;
+  player.x = (player.xOld + distX * rate) || player.serverX;
+  player.y = (player.yOld + distY * rate) || player.serverY;
 
   px = player.x;
   py = player.y;
