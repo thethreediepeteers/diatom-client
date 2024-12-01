@@ -6,7 +6,7 @@ class Socket {
     this.canvas = false;
   }
 
-  init(canvas) {
+  init = (canvas) => {
     this.ws = new WebSocket(this.addr);
     this.ws.binaryType = "arraybuffer";
     this.canvas = canvas;
@@ -40,13 +40,12 @@ class Socket {
       ready: () => flag
     }
 
-    this.ws.onopen = this.onopen.bind(this);
-    this.ws.onmessage = this.onmessage.bind(this);
-    this.ws.onclose = this.onclose.bind(this);
-    this.ws.onerror = this.onclose.bind(this);
+    this.ws.onopen = this.onopen;
+    this.ws.onmessage = this.onmessage;
+    this.ws.onclose = this.onclose;
   }
 
-  onopen() {
+  onopen = () => {
     console.log("Connected to server.");
 
     this.ws.commandCycle = setInterval(() => {
@@ -67,7 +66,7 @@ class Socket {
     }
   }
 
-  onmessage(message) {
+  onmessage = (message) => {
     const view = new DataView(message.data);
 
     let o = 0;
@@ -154,6 +153,8 @@ class Socket {
           }
 
           entity.index = id;
+          entity.xOld = entity.x || entity.serverData.x;
+          entity.yOld = entity.y || entity.serverData.y;
           entity.serverData.x = pos.x;
           entity.serverData.y = pos.y;
           entity.serverData.angle = angle;
@@ -193,7 +194,7 @@ class Socket {
     }
   }
 
-  onclose() {
+  onclose = () => {
     console.log("Connection closed.");
     clearInterval(this.ws.commandCycle);
 
@@ -201,7 +202,7 @@ class Socket {
     global.gameStart = false;
   }
 
-  talk(movement, flags) {
+  talk = (movement, flags) => {
     const buffer = new ArrayBuffer(13); // 1 byte for header, 4 bytes for mouse, 4 bytes for movement, 4 bytes for flags
     const view = new DataView(buffer);
 
