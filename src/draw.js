@@ -61,8 +61,8 @@ function drawEntities(px, py) {
   px = player.x;
   py = player.y;
 
-  camX = lerp(camX || 0, player.x, 0.1) - player.x;
-  camY = lerp(camY || 0, player.y, 0.1) - player.y;
+  camX = distX * rate;
+  camY = distY * rate;
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
   
