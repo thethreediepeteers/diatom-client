@@ -12,6 +12,7 @@ class Canvas {
     this.ctx = this.cv.getContext("2d");
 
     this.movement = { up: false, down: false, left: false, right: false };
+    this.sensivity = 3;
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
@@ -144,8 +145,8 @@ class Canvas {
   }
 
   mouseMove(event) {
-    global.mouse.x = (global.mouse.x + event.movementX) || 0;
-    global.mouse.y = (global.mouse.y + event.movementY) || 0;
+    global.mouse.x = (global.mouse.x + event.movementX * this.sensivity) || 0;
+    global.mouse.y = (global.mouse.y + event.movementY * this.sensivity) || 0;
     
     global.socket.cmd.talk();
   }
