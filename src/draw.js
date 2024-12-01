@@ -63,7 +63,7 @@ function drawEntities(px, py) {
 
   const tmpDist = Math.hypot(camX - player.serverX, camY - player.serverY);
   const tmpDir = Math.atan2(player.serverY - camY, player.serverX - camX);
-  const camSpd = tmpDist * 0.01;
+  const camSpd = tmpDist * 0.1;
 
   camX = (camSpd * Math.cos(tmpDir)) || 0;
   camY = (camSpd * Math.sin(tmpDir)) || 0;
