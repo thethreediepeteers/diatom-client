@@ -62,6 +62,16 @@ function drawEntities(px, py) {
   py = player.y;
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
+
+  const tmpDist = Math.hypot(camX - player.x, camY - player.y);
+  const tmpDir = Math.atan2(player.y - camY, player.x - camX);
+  const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
+
+  camX = (camX + camSpd * Math.cos(tmpDir)) || player.x;
+  camY = (camY + camSpd * Math.sin(tmpDir)) || player.y;
+
+  const xOffset = camX - cx;
+  const yOffset = camY - cy;
   
   let playerMockup = global.mockups.get(player.mockupId);
 
@@ -114,8 +124,8 @@ function drawEntities(px, py) {
     entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
-    let x = entity.x - player.x + camX + cx;
-    let y = entity.y - player.y + camY + cy;
+    let x = entity.x - xOffset;
+    let y = entity.y - yOffset;
 
     drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
     drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.scale);
