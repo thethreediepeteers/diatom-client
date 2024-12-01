@@ -144,7 +144,6 @@ class Socket {
               maxHealth: 0,
               color: colorStr,
               team: 0,
-              scale: 0,
               dead: false,
             };
             global.entities.set(id, entity);

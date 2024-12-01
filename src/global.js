@@ -11,7 +11,6 @@ const global = {
       height: 0
     }
   },
-  scale: 1,
   player: {
     x: 0,
     y: 0,

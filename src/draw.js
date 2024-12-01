@@ -17,7 +17,7 @@ function drawConnecting() {
   ctx.textBaseline = "middle";
 
   ctx.fillStyle = "#ffffff";
-  ctx.fillText("Connecting...", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Connecting", canvas.width / 2, canvas.height / 2);
 }
 
 function drawDisconnected() {
@@ -109,7 +109,7 @@ function drawEntities(px, py) {
     entity.health = targetHealth;
     entity.maxHealth = targetMhealth;
 
-    entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
+    entity.angle = entity.angle === 0 ? entity.serverData.angle : lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
     let x = entity.x - xOffset;
     let y = entity.y - yOffset;
