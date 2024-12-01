@@ -19,13 +19,12 @@ function calculateMouse() {
 class Game {
   constructor() {
     this.canvas = new Canvas();
-    this.protocol = "http";
 
     console.log(window.location);
 
     if (window.location.hostname === "localhost") {
       this.protocol = "http";
-      this.ip = "0.0.0.0";
+      this.ip = "0.0.0.0:3000";
     }
     else {
       this.protocol = "https";
@@ -75,7 +74,7 @@ class Game {
 
     this.loadMockups();
 
-    global.socket = new Socket(`${this.protocol === "http" ? "ws" : "wss"}://${this.ip}:3000/ws?color=${encodeURIComponent(global.color)}`);
+    global.socket = new Socket(`${this.protocol === "http" ? "ws" : "wss"}://${this.ip}/ws?color=${encodeURIComponent(global.color)}`);
     global.socket.init(this.canvas);
 
     window.addEventListener("resize", () => this.canvas.resize());
