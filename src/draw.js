@@ -65,7 +65,7 @@ function drawEntities(px, py) {
     const distY = entity.serverData.y - entity.yOld;
 
     // TODO: Save deltaTime to global
-    const interpolateRate = Math.min(1.7, 16.7 / 170); 
+    const interpolateRate = Math.min(0.5, global.deltaTime / 50); 
 
     const targetX = entity.x + distX * interpolateRate;
     const targetY = entity.y + distY * interpolateRate;
