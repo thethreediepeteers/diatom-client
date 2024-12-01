@@ -20,7 +20,15 @@ class Game {
   constructor() {
     this.canvas = new Canvas();
     this.protocol = "http";
-    this.ip = "0.0.0.0";
+
+    if (window.location.hostname === "localhost") {
+      this.protocol = "http";
+      this.ip = "0.0.0.0";
+    }
+    else {
+      this.protocol = "https";
+      this.ip = "diatom-server.onrender.com";
+    }
   }
 
   init = () => {
