@@ -146,7 +146,6 @@ class Socket {
               team: 0,
               scale: 0,
               dead: false,
-              dying: false
             };
             global.entities.set(id, entity);
           }
@@ -188,7 +187,7 @@ class Socket {
 
         for (let [id, entity] of global.entities) {
           if (!ids.has(id)) {
-            entity.dying = true;
+            entity.dead = true;
           }
         }
 

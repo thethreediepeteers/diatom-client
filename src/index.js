@@ -83,7 +83,7 @@ class Game {
   }
 
   loadMockups = () => {
-    let mockupData = fetchAsync(`${this.protocol}://${this.ip}:3000/mockups`);
+    let mockupData = fetchAsync(`${this.protocol}://${this.ip}/mockups`);
 
     mockupData.then((hexMockups) => {
       let buffer = new Uint8Array(hexMockups.match(/../g).map(h => parseInt(h, 16))).buffer;
