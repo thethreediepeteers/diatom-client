@@ -43,14 +43,9 @@ function drawHealth(x, y, health, maxHealth, r, color, scale) {
 
 function drawEntities(px, py) {
   let player = global.player;
-
-  const cost = player.serverX - player.xOld;
-  const sint = player.serverY - player.yOld;
-
-  const interpolationLevel = global.deltaTime / 2;
-
-  player.x = ((player.xOld || player.serverX) + cost * interpolationLevel) || player.serverX;
-  player.y = ((player.yOld || player.serverY) + sint * interpolationLevel) || player.serverY;
+  
+  player.x = player.serverX;
+  player.y = player.serverY;
   
   let playerMockup = global.mockups.get(player.mockupId);
 
@@ -74,15 +69,19 @@ function drawEntities(px, py) {
     const distY = entity.serverData.y - entity.yOld;
     const tooFar = Math.hypot(distX, distY) > 150;
 
-    // TODO: Save deltaTime to global
-    const targetX = entity.x + distX * (global.deltaTime / 2);
-    const targetY = entity.y + distY * (global.deltaTime / 2);
+    entity.dt = (entity.dt + global.deltaTime) || 0;
+
+    const rate = Math.min(0.5, entity.dt / 50);
+    
+    const targetX = entity.xOld + distX * rate;
+    const targetY = entity.yOld + distY * rate;
 
     entity.x = (tooFar ? entity.serverData.x : targetX) || entity.serverData.x;
     entity.y = (tooFar ? entity.serverData.y : targetY) || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
+    
     entity.health = targetHealth;
     entity.maxHealth = targetMhealth;
 
