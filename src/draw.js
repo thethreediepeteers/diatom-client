@@ -68,7 +68,7 @@ function drawEntities(px, py) {
 
     entity.dt = (entity.dt + global.deltaTime) || 0;
 
-    const rate = Math.min(0.5, entity.dt / 50);
+    const rate = Math.min(1, entity.dt / 33);
     
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
