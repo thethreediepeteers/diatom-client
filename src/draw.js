@@ -43,6 +43,21 @@ function drawHealth(x, y, health, maxHealth, r, color, scale) {
 
 function drawEntities(px, py) {
   let player = global.player;
+
+  player.dt = (player.dt + global.deltaTime) || 0;
+  
+  const rate = Math.min(1, player.dt / 33);
+
+  const distX = player.serverX - player.xOld;
+  const distY = player.serverY - player.yOld;
+  
+  const tooFar = Math.hypot(distX, distY) > 150;
+
+  player.x = player.xOld + distX * rate;
+  player.y = player.yOld + distY * rate;
+
+  px = player.x;
+  py = player.y;
   
   let playerMockup = global.mockups.get(player.mockupId);
 
