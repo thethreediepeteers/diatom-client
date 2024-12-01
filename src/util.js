@@ -1,15 +1,17 @@
+const PI2 = 2 * Math.PI;
+
 function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
 function lerpAngle(a, b, t) {
-  let diff = b - a;
+  let diff = (b - a) % PI2;
 
-  while (diff < -Math.PI) diff += 2 * Math.PI;
-  while (diff > Math.PI) diff -= 2 * Math.PI;
+  if (diff <= -Math.PI) diff += PI2;
+  else if (diff > Math.PI) diff -= PI2;
 
   return a + diff * t;
-};
+}
 
 async function fetchAsync(url) {
   let response = await fetch(url);
