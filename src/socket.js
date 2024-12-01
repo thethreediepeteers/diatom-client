@@ -168,8 +168,11 @@ class Socket {
           entity.mockupId = mockupId;
 
           if (id === global.index) {
-            global.player.x = pos.x;
-            global.player.y = pos.y;
+            global.player.xOld = global.player.x;
+            global.player.yOld = global.player.y;
+
+            global.player.serverX = pos.x;
+            global.player.serverY = pos.y;
             
             global.player.size = size;
             global.player.angle = angle;
