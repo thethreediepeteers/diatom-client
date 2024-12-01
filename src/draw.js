@@ -68,7 +68,7 @@ function drawEntities(px, py) {
   camX = camSpd * Math.cos(tmpDir);
   camY = camSpd * Math.sin(tmpDir);
 
-  console.log(camX, camY);
+  console.log(tmpDist, tmpDir, camSpd);
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
   
