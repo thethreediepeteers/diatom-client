@@ -129,17 +129,17 @@ function drawEntities(px, py) {
     entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
-    let x = entity.x - xOffset;
-    let y = entity.y - yOffset;
+    let x = entity.x - player.x;
+    let y = entity.y - player.y;
 
-    /*if (id === global.index) {
+    if (id === global.index) {
       x = cx;
       y = cy;
     }
     else {
       x += cx;
       y += cy;
-    }*/
+    }
 
     drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
     drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.scale);
