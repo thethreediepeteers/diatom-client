@@ -127,10 +127,9 @@ function drawEntities(px, py) {
     let y = entity.y - player.y - camY;
 
     if (id === global.index) {
-      x = cx;
-      y = cy;
-    }
-    else {
+      x = cx - camX;
+      y = cy - camY;
+    } else {
       x += cx;
       y += cy;
     }
