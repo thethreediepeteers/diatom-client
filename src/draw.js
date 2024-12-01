@@ -65,18 +65,10 @@ function drawEntities(px, py) {
   const tmpDir = Math.atan2(player.y - camY, player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
 
-  if (tmpDist > 100) {
-    camX = player.x;
-    camY = player.y;
-  } else {
-    camX += camSpd * Math.cos(tmpDir);
-    camY += camSpd * Math.sin(tmpDir);
-  }
+  camX = camSpd * Math.cos(tmpDir);
+  camY = camSpd * Math.sin(tmpDir);
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
-
-  let yOffset = camY - cy;
-  let xOffset = camX - cx;
   
   let playerMockup = global.mockups.get(player.mockupId);
 
@@ -129,8 +121,8 @@ function drawEntities(px, py) {
     entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
-    let x = entity.x - player.x;
-    let y = entity.y - player.y;
+    let x = entity.x - player.x - camX;
+    let y = entity.y - player.y - camY;
 
     if (id === global.index) {
       x = cx;
