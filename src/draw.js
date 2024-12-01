@@ -66,7 +66,7 @@ function drawEntities(px, py) {
     const tooFar = Math.hypot(distX, distY) > 150;
 
     // TODO: Save deltaTime to global
-    const interpolateRate = Math.min(0.5, global.deltaTime / 50); 
+    const interpolateRate = Math.min(0.5, global.deltaTime / 2); 
 
     const targetX = entity.x + distX * interpolateRate;
     const targetY = entity.y + distY * interpolateRate;
