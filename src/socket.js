@@ -168,6 +168,8 @@ class Socket {
           entity.mockupId = mockupId;
 
           if (id === global.index) {
+            global.player.dt = 0;
+            
             global.player.xOld = global.player.x;
             global.player.yOld = global.player.y;
 
