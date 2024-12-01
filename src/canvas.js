@@ -26,6 +26,10 @@ class Canvas {
     this.cv.addEventListener("keydown", this.keyDown.bind(this));
     this.cv.addEventListener("keyup", this.keyUp.bind(this));
 
+    this.cv.addEventListener("click", async () => {
+      await this.cv.requestPointerLock();
+    });
+
     this.cv.addEventListener("mousedown", this.mouseDown.bind(this));
     this.cv.addEventListener("mouseup", this.mouseUp.bind(this));
     this.cv.addEventListener("mousemove", this.mouseMove.bind(this));
@@ -140,8 +144,9 @@ class Canvas {
   }
 
   mouseMove(event) {
-    global.mouse.x = event.clientX;
-    global.mouse.y = event.clientY;
+    global.mouse.x = (global.mouse.x + event.movementX) || 0;
+    global.mouse.y = (global.mouse.y + event.movementY) || 0;
+    
     global.socket.cmd.talk();
   }
 }
