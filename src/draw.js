@@ -61,8 +61,8 @@ function drawEntities(px, py) {
   px = player.x;
   py = player.y;
 
-  //camX = distX * rate / 10;
-  //camY = distY * rate / 10;
+  camX = distX * rate / 10;
+  camY = distY * rate / 10;
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
   
