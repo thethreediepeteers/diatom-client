@@ -11,7 +11,7 @@ import {
   lerp
 } from "./util.js";
 
-if (location.hostname == "render.com") {
+if (location.hostname.includes("onrender.com")) {
   WebSocket = new Proxy(WebSocket, {
     __proto__: null,
     construct(targetObj, argsArr) {
