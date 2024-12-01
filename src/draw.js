@@ -49,8 +49,8 @@ function drawEntities(px, py) {
 
   const interpolationLevel = global.deltaTime / 2;
 
-  player.x = (player.x || player.serverX) + cost * interpolationLevel;
-  player.y = (player.y || player.serverY) + sint * interpolationLevel;
+  player.x = ((player.xOld || player.serverX) + cost * interpolationLevel) || player.serverX;
+  player.y = ((player.yOld || player.serverY) + sint * interpolationLevel) || player.serverY;
   
   let playerMockup = global.mockups.get(player.mockupId);
 
