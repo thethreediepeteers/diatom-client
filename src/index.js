@@ -38,8 +38,17 @@ function calculateMouse() {
 class Game {
   constructor() {
     this.canvas = new Canvas();
-    this.protocol = "http";
-    this.ip = "0.0.0.0";
+
+    console.log(window.location);
+
+    if (window.location.hostname === "localhost") {
+      this.protocol = "http";
+      this.ip = "0.0.0.0:3000";
+    }
+    else {
+      this.protocol = "https";
+      this.ip = "diatom-server.onrender.com";
+    }
   }
 
   init = () => {
@@ -84,7 +93,7 @@ class Game {
 
     this.loadMockups();
 
-    global.socket = new Socket(`${this.protocol === "http" ? "ws" : "wss"}://${this.ip}:3000/ws?color=${encodeURIComponent(global.color)}`);
+    global.socket = new Socket(`${this.protocol === "http" ? "ws" : "wss"}://${this.ip}/ws?color=${encodeURIComponent(global.color)}`);
     global.socket.init(this.canvas);
 
     window.addEventListener("resize", () => this.canvas.resize());
@@ -93,7 +102,7 @@ class Game {
   }
 
   loadMockups = () => {
-    let mockupData = fetchAsync(`${this.protocol}://${this.ip}:3000/mockups`);
+    let mockupData = fetchAsync(`${this.protocol}://${this.ip}/mockups`);
 
     mockupData.then((hexMockups) => {
       let buffer = new Uint8Array(hexMockups.match(/../g).map(h => parseInt(h, 16))).buffer;

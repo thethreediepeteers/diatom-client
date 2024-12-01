@@ -29,17 +29,17 @@ function drawDisconnected() {
   ctx.fillText("Disconnected", canvas.width / 2, canvas.height / 2);
 }
 
-function drawHealth(x, y, health, maxHealth, r, color, scale) {
+function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.beginPath();
 
   ctx.fillStyle = offsetHex(color);
-  ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2 * scale, 10 * scale, 5);
+  ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2, 10, 5);
   ctx.fill();
 
   ctx.beginPath();
 
   ctx.fillStyle = color;
-  ctx.roundRect(x - maxHealth + 2, y + r + 12, (health * 2 - 4) * scale, 6 * scale, 5);
+  ctx.roundRect(x - maxHealth + 2, y + r + 12, (health * 2 - 4), 6, 5);
   ctx.fill();
 }
 
@@ -47,12 +47,12 @@ function drawEntities(px, py) {
   let player = global.player;
 
   player.dt = (player.dt + global.deltaTime) || 0;
-  
+
   const rate = Math.min(1.7, player.dt / 170);
 
   const distX = player.serverX - player.xOld;
   const distY = player.serverY - player.yOld;
-  
+
   const tooFar = Math.hypot(distX, distY) > 150;
 
   player.x = (player.xOld + distX * rate) || player.serverX;
@@ -72,7 +72,7 @@ function drawEntities(px, py) {
 
   const xOffset = camX - cx;
   const yOffset = camY - cy;
-  
+
   let playerMockup = global.mockups.get(player.mockupId);
 
   if (!global || !playerMockup) {
@@ -96,7 +96,7 @@ function drawEntities(px, py) {
     entity.dt = (entity.dt + global.deltaTime) || 0;
 
     const rate = Math.min(1.7, entity.dt / 170);
-    
+
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
 
@@ -105,48 +105,35 @@ function drawEntities(px, py) {
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
-    
+
     entity.health = targetHealth;
     entity.maxHealth = targetMhealth;
 
-    let scaleTo = 1;
-    if (entity.dying) {
-      scaleTo = 0;
-
-      if (entity.scale < 0.01) {
-        entity.dying = false;
-        entity.dead = true;
-
-        continue;
-      }
-    }
-
-    entity.scale = lerp(entity.scale, scaleTo, 0.2);
     entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.4);
 
     let x = entity.x - xOffset;
     let y = entity.y - yOffset;
 
-    drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
-    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.scale);
+    drawEntity(x, y, entity.size, entity.angle, entity.color, mockup);
+    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color);
   }
 }
 
-function drawEntity(x, y, size, scale, angle, color, mockup) {
+function drawEntity(x, y, size, angle, color, mockup) {
   // draw guns below 
   for (let gun of mockup.guns) {
     let gx = gun.offset * Math.cos(gun.direction + gun.angle + angle);
     let gy = gun.offset * Math.sin(gun.direction + gun.angle + angle);
 
-    drawTrapezoid(x + gx, y + gy, gun.length * scale, gun.width * scale, angle + gun.angle, gun.aspect, "#808080");
+    drawTrapezoid(x + gx, y + gy, gun.length, gun.width, angle + gun.angle, gun.aspect, "#808080");
   }
 
   ctx.lineWidth = 5;
-  drawPoly(x, y, size * scale, mockup.shape, angle, color);
+  drawPoly(x, y, size, mockup.shape, angle, color);
 
   // draw turrets above
   for (let turret of mockup.turrets) {
-    drawPoly(turret.x + x, turret.y + y, turret.size * scale, turret.shape, angle + turret.angle, "#808080");
+    drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, angle + turret.angle, "#808080");
   }
 }
 

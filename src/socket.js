@@ -76,7 +76,6 @@ class Socket {
       case 's': // spawn data
         const id = view.getUint32(o, true);
         global.index = id;
-        console.log(view);
         break;
 
       case 'm': // map data
@@ -147,7 +146,6 @@ class Socket {
               team: 0,
               scale: 0,
               dead: false,
-              dying: false
             };
             global.entities.set(id, entity);
           }
@@ -169,13 +167,13 @@ class Socket {
 
           if (id === global.index) {
             global.player.dt = 0;
-            
+
             global.player.xOld = global.player.x;
             global.player.yOld = global.player.y;
 
             global.player.serverX = pos.x;
             global.player.serverY = pos.y;
-            
+
             global.player.size = size;
             global.player.angle = angle;
             global.player.color = colorStr;
@@ -189,7 +187,7 @@ class Socket {
 
         for (let [id, entity] of global.entities) {
           if (!ids.has(id)) {
-            entity.dying = true;
+            entity.dead = true;
           }
         }
 
