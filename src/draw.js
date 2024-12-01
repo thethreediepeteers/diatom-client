@@ -69,6 +69,8 @@ function drawEntities(px, py) {
 
     const targetX = entity.x + distX * interpolateRate;
     const targetY = entity.y + distY * interpolateRate;
+
+    console.log(targetX, targetY, distX, distY, interpolateRate, entity.xOld, entity.yOld);
     
     entity.x = targetX || entity.serverData.x;
     entity.y = targetY || entity.serverData.y;
