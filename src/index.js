@@ -14,13 +14,13 @@ import {
 function calculateMouse() {
   global.target.x = Math.round(global.mouse.x - global.screenWidth / 2);
   global.target.y = Math.round(global.mouse.y - global.screenHeight / 2);
+
+  global.mouseAngle = Math.atan2(global.target.y, global.target.x);
 }
 
 class Game {
   constructor() {
     this.canvas = new Canvas();
-
-    console.log(window.location);
 
     if (window.location.hostname === "localhost") {
       this.protocol = "http";
