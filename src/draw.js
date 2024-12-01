@@ -44,9 +44,6 @@ function drawHealth(x, y, health, maxHealth, r, color, scale) {
 function drawEntities(px, py) {
   let player = global.player;
   
-  player.x = player.serverX;
-  player.y = player.serverY;
-  
   let playerMockup = global.mockups.get(player.mockupId);
 
   if (!global || !playerMockup) {
