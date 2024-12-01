@@ -132,14 +132,14 @@ function drawEntities(px, py) {
     let x = entity.x - xOffset;
     let y = entity.y - yOffset;
 
-    if (id === global.index) {
+    /*if (id === global.index) {
       x = cx;
       y = cy;
     }
     else {
       x += cx;
       y += cy;
-    }
+    }*/
 
     drawEntity(x, y, entity.size, entity.scale, entity.angle, entity.color, mockup);
     drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.scale);
