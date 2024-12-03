@@ -5,8 +5,27 @@ class Socket {
     this.addr = addr;
     this.canvas = false;
     this.commands = [false, false, false];
-    this.flag = false;
     this.ws = null;
+
+    let flag = false;
+
+    this.cmd = {
+      set: (index, value) => {
+        if (commands[index] !== value || index === 0) {
+          commands[index] = value;
+          flag = true;
+        }
+      }, talk: () => {
+        flag = false;
+        let o = 0;
+
+        for (let i = 0; i < commands.length; i++) {
+          if (commands[i]) o |= (1 << i);
+        }
+
+        this.talk(global.movement, o);
+      }, ready: () => flag
+    }
   }
 
   init(canvas) {
@@ -17,19 +36,6 @@ class Socket {
     this.ws.onopen = this.onOpen.bind(this);
     this.ws.onmessage = this.onMessage.bind(this);
     this.ws.onclose = this.onClose.bind(this);
-  }
-
-  cmd(index, value) {
-    if (this.commands[index] !== value || index === 0) {
-      this.commands[index] = value;
-      this.flag = true;
-    }
-  }
-
-  talk() {
-    if (!this.flag) return;
-    const flags = this.commands.reduce((o, cmd, i) => o | (cmd ? (1 << i) : 0), 0);
-    this.sendData("m", global.movement, flags);
   }
 
   onOpen() {
