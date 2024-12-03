@@ -23,7 +23,7 @@ class Socket {
           if (commands[i]) o |= (1 << i);
         }
 
-        this.talk(global.movement, o);
+        this.sendData("m", global.movement, o);
       }, ready: () => flag
     }
   }
