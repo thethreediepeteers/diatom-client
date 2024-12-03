@@ -4,10 +4,10 @@ class Socket {
   constructor(addr) {
     this.addr = addr;
     this.canvas = false;
-    this.commands = [false, false, false];
     this.ws = null;
 
     let flag = false;
+    let commands = [false, false, false];
 
     this.cmd = {
       set: (index, value) => {
