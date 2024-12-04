@@ -11,7 +11,7 @@ class Canvas {
 
     this.ctx = this.cv.getContext("2d");
 
-    this.movement = { up: false, down: false, left: false, right: false };
+    this.movement = {};
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
@@ -32,8 +32,6 @@ class Canvas {
   }
 
   clear() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-
     this.ctx.fillStyle = "#c9c9c9";
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
@@ -41,14 +39,19 @@ class Canvas {
   drawGrid(dx, dy, cellSize) {
     this.ctx.beginPath();
 
-    for (let x = dx % cellSize; x < this.width; x += cellSize) {
-      this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this.height);
-    }
+    const startX = dx % cellSize;
+    const startY = dy % cellSize;
 
-    for (let y = dy % cellSize; y < this.height; y += cellSize) {
-      this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this.width, y);
+    for (let i = 0; i < Math.max(this.width, this.height); i += cellSize) {
+      if (startX + i < this.width) {
+        this.ctx.moveTo(startX + i, 0);
+        this.ctx.lineTo(startX + i, this.height);
+      }
+  
+      if (startY + i < this.height) {
+        this.ctx.moveTo(0, startY + i);
+        this.ctx.lineTo(this.width, startY + i);
+      }
     }
 
     this.ctx.lineWidth = 0.5;
@@ -63,8 +66,7 @@ class Canvas {
     if (x === 0 && y === 0) {
       global.movement = 0;
       global.socket.cmd.set(0, false);
-    }
-    else {
+    } else {
       global.movement = Math.atan2(y, x);
       global.socket.cmd.set(0, true);
     }
@@ -75,19 +77,15 @@ class Canvas {
       case "KeyW":
         this.movement.up = true;
         break;
-
       case "KeyS":
         this.movement.down = true;
         break;
-
       case "KeyD":
         this.movement.right = true;
         break;
-
       case "KeyA":
         this.movement.left = true;
         break;
-
       default:
         return;
     }
@@ -100,19 +98,15 @@ class Canvas {
       case "KeyW":
         this.movement.up = false;
         break;
-
       case "KeyS":
         this.movement.down = false;
         break;
-
       case "KeyD":
         this.movement.right = false;
         break;
-
       case "KeyA":
         this.movement.left = false;
         break;
-
       default:
         return;
     }
