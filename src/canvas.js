@@ -35,8 +35,6 @@ class Canvas {
   }
 
   clear() {
-    this.ctx.clearRect(0, 0, this.width, this.height);
-
     this.ctx.fillStyle = "#c9c9c9";
     this.ctx.fillRect(0, 0, this.width, this.height);
   }
