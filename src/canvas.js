@@ -17,6 +17,9 @@ class Canvas {
   resize(width = window.innerWidth, height = window.innerHeight) {
     this.cv.width = this.width = global.screenWidth = width * window.devicePixelRatio;
     this.cv.height = this.height = global.screenHeight = height * window.devicePixelRatio;
+
+    global.screenWidthHalf = global.screenWidth / 2;
+    global.screenHeightHalf = global.screenHeight / 2;
   }
 
   init() {
