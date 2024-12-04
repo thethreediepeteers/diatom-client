@@ -33,7 +33,7 @@ function drawDisconnected() {
 function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.beginPath();
 
-  ctx.fillStyle = color;
+  ctx.fillStyle = offsetHex(color);
   ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2, 10, 5);
   ctx.fill();
 
@@ -131,7 +131,16 @@ function drawEntity(x, y, size, angle, color, mockup) {
   }
 }
 
-function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = color) {
+function offsetHex(hex) {
+  const color = parseInt(hex.slice(1), 16);
+  const r = clamp((color >> 16) & 0xff);
+  const g = clamp((color >> 8) & 0xff);
+  const b = clamp(color & 0xff);
+
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
   const h1 = aspect > 0 ? width * aspect : width;
   const h2 = aspect > 0 ? width : -width / aspect;
 
@@ -153,7 +162,7 @@ function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = 
   ctx.restore();
 }
 
-function drawPoly(x, y, radius, shape, angle, color, strokeColor = color) {
+function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) {
   angle += shape % 2 ? 0 : Math.PI / shape;
 
   ctx.beginPath();
