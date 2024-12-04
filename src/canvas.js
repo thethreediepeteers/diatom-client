@@ -11,7 +11,7 @@ class Canvas {
 
     this.ctx = this.cv.getContext("2d");
 
-    this.movement = {};
+    this.movement = { KeyW: 0, KeyS: 0, KeyA: 0, KeyD: 0 };
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
