@@ -144,7 +144,6 @@ function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = 
   const h1 = aspect > 0 ? width * aspect : width;
   const h2 = aspect > 0 ? width : -width / aspect;
 
-  ctx.save();
   ctx.translate(x, y);
   ctx.rotate(angle);
   
@@ -161,8 +160,6 @@ function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = 
   ctx.fill();
   ctx.strokeStyle = strokeColor;
   ctx.stroke();
-  
-  ctx.restore();
 }
 
 function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) {
