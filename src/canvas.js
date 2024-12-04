@@ -75,13 +75,13 @@ class Canvas {
   }
 
   keyDown(event) {
-    this.movement[event.code] = true;
+    this.movement[event.code] = 1;
 
     this.calcMovement();
   }
 
   keyUp(event) {
-    this.movement[event.code] = false;
+    this.movement[event.code] = 0;
 
     this.calcMovement();
   }
