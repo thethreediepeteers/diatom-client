@@ -179,7 +179,7 @@ class Game {
   }
 
   render() {
-    this.canvas.clear();
+    //this.canvas.clear();
 
     if (global.gameStart && global.player) {
       const cx = this.canvas.width / 2;
