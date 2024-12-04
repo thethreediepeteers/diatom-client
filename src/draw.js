@@ -141,23 +141,19 @@ function offsetHex(hex) {
 }
 
 function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
-  let h = aspect > 0 ? [width * aspect, width] : [width, -width / aspect];
-  let points = [
-    [0, h[1]],
-    [length * 2, h[0]],
-    [length * 2, -h[0]],
-    [0, -h[1]]
-  ];
-  let sinT = Math.sin(angle);
-  let cosT = Math.cos(angle);
+  const h1 = aspect > 0 ? width * aspect : width;
+  const h2 = aspect > 0 ? width : -width / aspect;
+  
+  const sinT = Math.sin(angle);
+  const cosT = Math.cos(angle);
 
   ctx.beginPath();
-  for (let point of points) {
-    let newX = point[0] * cosT - point[1] * sinT + x;
-    let newY = point[0] * sinT + point[1] * cosT + y;
-
-    ctx.lineTo(newX, newY);
-  }
+  
+  ctx.moveTo(x, y + h2);
+  ctx.lineTo(x + length * 2 * cosT, y + h1 * cosT - h2 * sinT);
+  ctx.lineTo(x + length * 2 * cosT, y - h1 * sinT - h2 * cosT);
+  ctx.lineTo(x, y - h2);
+  
   ctx.closePath();
 
   ctx.lineWidth = 5;
