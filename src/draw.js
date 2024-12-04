@@ -5,7 +5,7 @@ import {
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d", { alpha: false });
-const clamp = value => Math.min(Math.max(value - 32, 0), 255);
+const clamp = value => Math.min(Math.max((value & 255) - 32, 0), 255);
 
 let camX = 0, camY = 0;
 
