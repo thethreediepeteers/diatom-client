@@ -21,6 +21,8 @@ class Canvas {
 
   init() {
     this.cv.style.display = "flex";
+    this.cv.style.backgroundColor = "#c9c9c9";
+    
     this.cv.focus();
 
     this.cv.addEventListener("keydown", this.keyDown.bind(this));
@@ -32,8 +34,7 @@ class Canvas {
   }
 
   clear() {
-    this.ctx.fillStyle = "#c9c9c9";
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
   drawGrid(dx, dy, cellSize) {
