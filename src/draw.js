@@ -5,6 +5,7 @@ import {
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const clamp = value => Math.min(Math.max(value - 32, 0), 255);
 
 let camX = 0, camY = 0;
 
@@ -43,7 +44,7 @@ function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.fill();
 }
 
-function drawEntities(px, py) {
+function drawEntities() {
   let player = global.player;
 
   player.dt = (player.dt + global.deltaTime) || 0;
@@ -57,9 +58,6 @@ function drawEntities(px, py) {
 
   player.x = (player.xOld + distX * rate) || player.serverX;
   player.y = (player.yOld + distY * rate) || player.serverY;
-
-  px = player.x;
-  py = player.y;
 
   const cx = canvas.width / 2, cy = canvas.height / 2;
 
@@ -75,9 +73,7 @@ function drawEntities(px, py) {
 
   let playerMockup = global.mockups.get(player.mockupId);
 
-  if (!global || !playerMockup) {
-    return;
-  };
+  if (!global || !playerMockup) return;
 
   for (let [id, entity] of global.entities) {
     if (entity.dead) {
@@ -138,27 +134,12 @@ function drawEntity(x, y, size, angle, color, mockup) {
 }
 
 function offsetHex(hex) {
-  const r = parseInt(hex.substring(1, 3), 16);
-  const g = parseInt(hex.substring(3, 5), 16);
-  const b = parseInt(hex.substring(5, 7), 16);
+  const color = parseInt(hex.slice(1), 16);
+  const r = clamp((color >> 16) & 0xff);
+  const g = clamp((color >> 8) & 0xff);
+  const b = clamp(color & 0xff);
 
-  const clamp = (value, min, max) => {
-    return Math.min(Math.max(value, min), max);
-  }
-
-  const newR = clamp(r - 32, 0, 255);
-  const newG = clamp(g - 32, 0, 255);
-  const newB = clamp(b - 32, 0, 255);
-
-  function toHex(comp) {
-    const hex = comp.toString(16);
-
-    return hex.length === 1 ? `0${hex}` : hex;
-  }
-
-  const newHex = `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
-
-  return newHex;
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
 function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
