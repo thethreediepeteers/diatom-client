@@ -11,7 +11,7 @@ class Canvas {
 
     this.ctx = this.cv.getContext("2d");
 
-    this.movement = { up: false, down: false, left: false, right: false };
+    this.movement = {};
   }
 
   resize(width = window.innerWidth, height = window.innerHeight) {
@@ -44,14 +44,16 @@ class Canvas {
   drawGrid(dx, dy, cellSize) {
     this.ctx.beginPath();
 
-    for (let x = dx % cellSize; x < this.width; x += cellSize) {
-      this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this.height);
-    }
+    for (let x = dx % cellSize, y = dy % cellSize; x < this.width || y < this.height; x += cellSize, y += cellSize) {
+      if (x < this.width) {
+        this.ctx.moveTo(x, 0);
+        this.ctx.lineTo(x, this.height);
+      }
 
-    for (let y = dy % cellSize; y < this.height; y += cellSize) {
-      this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this.width, y);
+      if (y < this.height) {
+        this.ctx.moveTo(0, y);
+        this.ctx.lineTo(this.width, y);
+      }
     }
 
     this.ctx.lineWidth = 0.5;
@@ -60,65 +62,26 @@ class Canvas {
   }
 
   calcMovement() {
-    const x = this.movement.right - this.movement.left;
-    const y = this.movement.down - this.movement.up;
+    const x = this.movement.KeyD - this.movement.KeyA;
+    const y = this.movement.KeyS - this.movement.KeyW;
 
     if (x === 0 && y === 0) {
       global.movement = 0;
       global.socket.cmd.set(0, false);
-    }
-    else {
+    } else {
       global.movement = Math.atan2(y, x);
       global.socket.cmd.set(0, true);
     }
   }
 
   keyDown(event) {
-    switch (event.code) {
-      case "KeyW":
-        this.movement.up = true;
-        break;
-
-      case "KeyS":
-        this.movement.down = true;
-        break;
-
-      case "KeyD":
-        this.movement.right = true;
-        break;
-
-      case "KeyA":
-        this.movement.left = true;
-        break;
-
-      default:
-        return;
-    }
+    this.movement[event.code] = true;
 
     this.calcMovement();
   }
 
   keyUp(event) {
-    switch (event.code) {
-      case "KeyW":
-        this.movement.up = false;
-        break;
-
-      case "KeyS":
-        this.movement.down = false;
-        break;
-
-      case "KeyD":
-        this.movement.right = false;
-        break;
-
-      case "KeyA":
-        this.movement.left = false;
-        break;
-
-      default:
-        return;
-    }
+    this.movement[event.code] = false;
 
     this.calcMovement();
   }
