@@ -85,14 +85,7 @@ class Canvas {
   }
 
   handleMouse(button, pressed) {
-    switch (button) {
-      case 0:
-        global.socket.cmd.set(1, pressed);
-        break;
-      case 2:
-        global.socket.cmd.set(2, pressed);
-        break;
-    }
+    global.socket.cmd.set(button == 0 ? 1 : 2, pressed);
   }
 
   mouseDown(event) {
