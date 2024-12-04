@@ -143,24 +143,26 @@ function offsetHex(hex) {
 function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
   const h1 = aspect > 0 ? width * aspect : width;
   const h2 = aspect > 0 ? width : -width / aspect;
-  
-  const sinT = Math.sin(angle);
-  const cosT = Math.cos(angle);
 
-  ctx.beginPath();
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
   
-  ctx.moveTo(x, y + h2);
-  ctx.lineTo(x + length * 2 * cosT, y + h1 * cosT - h2 * sinT);
-  ctx.lineTo(x + length * 2 * cosT, y - h1 * sinT - h2 * cosT);
-  ctx.lineTo(x, y - h2);
+  ctx.beginPath();
+  ctx.moveTo(0, h2);
+  ctx.lineTo(length * 2, h1);
+  ctx.lineTo(length * 2, -h1);
+  ctx.lineTo(0, -h2);
   
   ctx.closePath();
-
+  
   ctx.lineWidth = 5;
   ctx.fillStyle = color;
   ctx.fill();
   ctx.strokeStyle = strokeColor;
   ctx.stroke();
+  
+  ctx.restore();
 }
 
 function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) {
