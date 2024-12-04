@@ -39,18 +39,15 @@ class Canvas {
   drawGrid(dx, dy, cellSize) {
     this.ctx.beginPath();
 
-    const startX = dx % cellSize;
-    const startY = dy % cellSize;
-
-    for (let i = 0; i < Math.max(this.width, this.height); i += cellSize) {
-      if (startX + i < this.width) {
-        this.ctx.moveTo(startX + i, 0);
-        this.ctx.lineTo(startX + i, this.height);
+    for (let x = dx % cellSize, y = dy % cellSize; x < this.width || y < this.height; x += cellSize, y += cellSize) { 
+      if (x < this.width) {
+        this.ctx.moveTo(x, 0); 
+        this.ctx.lineTo(x, this.height); 
       }
-  
-      if (startY + i < this.height) {
-        this.ctx.moveTo(0, startY + i);
-        this.ctx.lineTo(this.width, startY + i);
+
+      if (y < this.height) {
+        this.ctx.moveTo(0, y);
+        this.ctx.lineTo(this.width, y);
       }
     }
 
