@@ -132,6 +132,7 @@ function drawEntity(x, y, size, angle, color, mockup) {
 }
 
 function offsetHex(hex) {
+  console.log(hex)
   const color = parseInt(hex.slice(1), 16);
   const r = clamp((color >> 16) & 0xff);
   const g = clamp((color >> 8) & 0xff);
@@ -166,11 +167,7 @@ function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(col
   angle += shape % 2 ? 0 : Math.PI / shape;
 
   ctx.beginPath();
-  if (!shape) {
-    // circle
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-  } else {
-    // polygon
+  if (shape) {
     angle += (shape % 1) * Math.PI * 2;
 
     for (let i = 0; i < shape; i++) {
@@ -178,9 +175,7 @@ function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(col
 
       ctx.lineTo(x + radius * Math.cos(theta), y + radius * Math.sin(theta));
     }
-  }
-
-  ctx.closePath();
+  } else ctx.arc(x, y, radius, 0, 2 * Math.PI);
 
   ctx.fillStyle = color;
   ctx.fill();
