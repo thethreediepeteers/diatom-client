@@ -114,7 +114,6 @@ function drawEntities() {
 }
 
 function drawEntity(x, y, size, angle, color, mockup) {
-  // draw guns below 
   for (let gun of mockup.guns) {
     let gx = gun.offset * Math.cos(gun.direction + gun.angle + angle);
     let gy = gun.offset * Math.sin(gun.direction + gun.angle + angle);
@@ -125,7 +124,6 @@ function drawEntity(x, y, size, angle, color, mockup) {
   ctx.lineWidth = 5;
   drawPoly(x, y, size, mockup.shape, angle, color);
 
-  // draw turrets above
   for (let turret of mockup.turrets) {
     drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, angle + turret.angle, "#808080");
   }
