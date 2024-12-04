@@ -22,23 +22,22 @@ class Game {
   constructor() {
     this.canvas = new Canvas();
 
-    if (window.location.hostname === "localhost") {
+    if (location.hostname == "localhost") {
       this.protocol = "http";
       this.ip = "0.0.0.0:3000";
-    }
-    else {
+    } else {
       this.protocol = "https";
       this.ip = "diatom-server.onrender.com";
     }
   }
 
-  init = () => {
+  init() {
     let colorBucket = document.getElementById("colorbucket");
     let mainButtonsDiv = document.getElementById("mainbuttons");
     let colorButtonsDiv = document.getElementById("colorbuttons");
     let colorConfirm = document.getElementById("colorconfirm");
     let colorRows = document.getElementById("colorselect").children;
-    let playerColor = window.localStorage.getItem("playerColor");
+    let playerColor = localStorage.getItem("playerColor");
 
     global.color = playerColor ?? "#00b0e1"
 
@@ -52,24 +51,24 @@ class Game {
       mainButtonsDiv.style.display = "block";
     });
 
-    Array.from(colorRows).forEach(row => {
+    Array.from(colorRows, row => {
       let buttons = row.children;
 
-      Array.from(buttons).forEach(button => {
+      Array.from(buttons, button => {
         button.addEventListener("click", () => {
           global.color = global.colors.get(button.id);
 
-          window.localStorage.setItem("playerColor", global.color);
+          localStorage.setItem("playerColor", global.color);
           document.getElementById("colorconfirm").style.background = global.color;
           document.getElementById("colorbucket").style.background = global.color;
         });
       });
     });
 
-    document.getElementById("start").addEventListener("click", this.start);
+    document.getElementById("start").addEventListener("click", this.start.bind(this));
   }
 
-  start = () => {
+  start() {
     document.getElementById("startmenu").style.display = "none";
 
     this.loadMockups();
@@ -77,15 +76,15 @@ class Game {
     global.socket = new Socket(`${this.protocol === "http" ? "ws" : "wss"}://${this.ip}/ws?color=${encodeURIComponent(global.color)}`);
     global.socket.init(this.canvas);
 
-    window.addEventListener("resize", () => this.canvas.resize());
-    window.addEventListener("contextmenu", (event) => event.preventDefault());
-    window.requestAnimationFrame(this.update);
+    addEventListener("resize", this.canvas.resize.bind(this.canvas));
+    requestAnimationFrame(this.update.bind(this));
+    addEventListener("contextmenu", event => event.preventDefault());
   }
 
-  loadMockups = () => {
+  loadMockups() {
     let mockupData = fetchAsync(`${this.protocol}://${this.ip}/mockups`);
 
-    mockupData.then((hexMockups) => {
+    mockupData.then(hexMockups => {
       let buffer = new Uint8Array(hexMockups.match(/../g).map(h => parseInt(h, 16))).buffer;
       let view = new DataView(buffer);
 
@@ -166,7 +165,7 @@ class Game {
     });
   }
 
-  update = () => {
+  update() {
     global.deltaTime = performance.now() - this.lastUpdate;
     this.lastUpdate = performance.now();
     global.map.width = lerp(global.map.width, global.map.serverData.width, 0.1);
@@ -176,10 +175,10 @@ class Game {
 
     this.render();
 
-    window.requestAnimationFrame(this.update);
+    requestAnimationFrame(this.update.bind(this));
   }
 
-  render = () => {
+  render() {
     this.canvas.clear();
 
     if (global.gameStart && global.player) {
@@ -192,11 +191,8 @@ class Game {
       this.canvas.ctx.fillRect(cx - px, cy - py, global.map.width, global.map.height);
       this.canvas.drawGrid(cx - px, cy - py, 32);
 
-      drawEntities(px, py);
-    }
-    else if (!global.disconnected) {
-      drawConnecting();
-    }
+      drawEntities();
+    } else if (!global.disconnected) drawConnecting();
     if (global.disconnected) {
       drawDisconnected();
     }

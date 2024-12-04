@@ -4,7 +4,8 @@ import {
 } from "./util.js";
 
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d", { alpha: false });
+const clamp = value => Math.min(Math.max((value & 255) - 32, 0), 255);
 
 let camX = 0, camY = 0;
 
@@ -17,7 +18,7 @@ function drawConnecting() {
   ctx.textBaseline = "middle";
 
   ctx.fillStyle = "#ffffff";
-  ctx.fillText("Connecting", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Connecting", global.screenWidthHalf, global.screenHeightHalf);
 }
 
 function drawDisconnected() {
@@ -26,7 +27,7 @@ function drawDisconnected() {
   ctx.textBaseline = "middle";
 
   ctx.fillStyle = "#ff0000";
-  ctx.fillText("Disconnected", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Disconnected", global.screenWidthHalf, global.screenHeightHalf);
 }
 
 function drawHealth(x, y, health, maxHealth, r, color) {
@@ -43,7 +44,7 @@ function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.fill();
 }
 
-function drawEntities(px, py) {
+function drawEntities() {
   let player = global.player;
 
   player.dt = (player.dt + global.deltaTime) || 0;
@@ -58,11 +59,6 @@ function drawEntities(px, py) {
   player.x = (player.xOld + distX * rate) || player.serverX;
   player.y = (player.yOld + distY * rate) || player.serverY;
 
-  px = player.x;
-  py = player.y;
-
-  const cx = canvas.width / 2, cy = canvas.height / 2;
-
   const tmpDist = Math.hypot(camX - player.x, camY - player.y);
   const tmpDir = Math.atan2(player.y - camY, player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
@@ -70,14 +66,12 @@ function drawEntities(px, py) {
   camX = (camX + camSpd * Math.cos(tmpDir)) || player.x;
   camY = (camY + camSpd * Math.sin(tmpDir)) || player.y;
 
-  const xOffset = camX - cx;
-  const yOffset = camY - cy;
+  const xOffset = camX - global.screenWidthHalf;
+  const yOffset = camY - global.screenHeightHalf;
 
   let playerMockup = global.mockups.get(player.mockupId);
 
-  if (!global || !playerMockup) {
-    return;
-  };
+  if (!global || !playerMockup) return;
 
   for (let [id, entity] of global.entities) {
     if (entity.dead) {
@@ -120,7 +114,6 @@ function drawEntities(px, py) {
 }
 
 function drawEntity(x, y, size, angle, color, mockup) {
-  // draw guns below 
   for (let gun of mockup.guns) {
     let gx = gun.offset * Math.cos(gun.direction + gun.angle + angle);
     let gy = gun.offset * Math.sin(gun.direction + gun.angle + angle);
@@ -131,72 +124,46 @@ function drawEntity(x, y, size, angle, color, mockup) {
   ctx.lineWidth = 5;
   drawPoly(x, y, size, mockup.shape, angle, color);
 
-  // draw turrets above
   for (let turret of mockup.turrets) {
     drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, angle + turret.angle, "#808080");
   }
 }
 
 function offsetHex(hex) {
-  const r = parseInt(hex.substring(1, 3), 16);
-  const g = parseInt(hex.substring(3, 5), 16);
-  const b = parseInt(hex.substring(5, 7), 16);
+  const color = parseInt(hex.slice(1), 16);
+  const r = clamp(color >> 16);
+  const g = clamp(color >> 8);
+  const b = clamp(color);
 
-  const clamp = (value, min, max) => {
-    return Math.min(Math.max(value, min), max);
-  }
-
-  const newR = clamp(r - 32, 0, 255);
-  const newG = clamp(g - 32, 0, 255);
-  const newB = clamp(b - 32, 0, 255);
-
-  function toHex(comp) {
-    const hex = comp.toString(16);
-
-    return hex.length === 1 ? `0${hex}` : hex;
-  }
-
-  const newHex = `#${toHex(newR)}${toHex(newG)}${toHex(newB)}`;
-
-  return newHex;
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
 
 function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
-  let h = aspect > 0 ? [width * aspect, width] : [width, -width / aspect];
-  let points = [
-    [0, h[1]],
-    [length * 2, h[0]],
-    [length * 2, -h[0]],
-    [0, -h[1]]
-  ];
-  let sinT = Math.sin(angle);
-  let cosT = Math.cos(angle);
+  const h1 = aspect > 0 ? width * aspect : width;
+  const h2 = aspect > 0 ? width : -width / aspect;
 
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  
   ctx.beginPath();
-  for (let point of points) {
-    let newX = point[0] * cosT - point[1] * sinT + x;
-    let newY = point[0] * sinT + point[1] * cosT + y;
-
-    ctx.lineTo(newX, newY);
-  }
-  ctx.closePath();
-
+  ctx.moveTo(0, h2);
+  ctx.lineTo(length * 2, h1);
+  ctx.lineTo(length * 2, -h1);
+  ctx.lineTo(0, -h2);
+  
   ctx.lineWidth = 5;
   ctx.fillStyle = color;
-  ctx.fill();
   ctx.strokeStyle = strokeColor;
+  ctx.fill();
   ctx.stroke();
+  ctx.resetTransform();
 }
 
 function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) {
   angle += shape % 2 ? 0 : Math.PI / shape;
 
   ctx.beginPath();
-  if (!shape) {
-    // circle
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-  } else {
-    // polygon
+  if (shape) {
     angle += (shape % 1) * Math.PI * 2;
 
     for (let i = 0; i < shape; i++) {
@@ -204,9 +171,7 @@ function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(col
 
       ctx.lineTo(x + radius * Math.cos(theta), y + radius * Math.sin(theta));
     }
-  }
-
-  ctx.closePath();
+  } else ctx.arc(x, y, radius, 0, 2 * Math.PI);
 
   ctx.fillStyle = color;
   ctx.fill();
