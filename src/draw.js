@@ -133,9 +133,9 @@ function drawEntity(x, y, size, angle, color, mockup) {
 
 function offsetHex(hex) {
   const color = parseInt(hex.slice(1), 16);
-  const r = clamp((color >> 16) & 0xff);
-  const g = clamp((color >> 8) & 0xff);
-  const b = clamp(color & 0xff);
+  const r = clamp(color >> 16);
+  const g = clamp(color >> 8);
+  const b = clamp(color);
 
   return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
 }
