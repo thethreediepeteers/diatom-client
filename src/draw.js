@@ -4,7 +4,7 @@ import {
 } from "./util.js";
 
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d", { alpha: false });
 const clamp = value => Math.min(Math.max(value - 32, 0), 255);
 
 let camX = 0, camY = 0;
@@ -18,7 +18,7 @@ function drawConnecting() {
   ctx.textBaseline = "middle";
 
   ctx.fillStyle = "#ffffff";
-  ctx.fillText("Connecting", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Connecting", global.screenWidthHalf, global.screenHeightHalf);
 }
 
 function drawDisconnected() {
@@ -27,7 +27,7 @@ function drawDisconnected() {
   ctx.textBaseline = "middle";
 
   ctx.fillStyle = "#ff0000";
-  ctx.fillText("Disconnected", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("Disconnected", global.screenWidthHalf, global.screenHeightHalf);
 }
 
 function drawHealth(x, y, health, maxHealth, r, color) {
@@ -59,8 +59,6 @@ function drawEntities() {
   player.x = (player.xOld + distX * rate) || player.serverX;
   player.y = (player.yOld + distY * rate) || player.serverY;
 
-  const cx = canvas.width / 2, cy = canvas.height / 2;
-
   const tmpDist = Math.hypot(camX - player.x, camY - player.y);
   const tmpDir = Math.atan2(player.y - camY, player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
@@ -68,8 +66,8 @@ function drawEntities() {
   camX = (camX + camSpd * Math.cos(tmpDir)) || player.x;
   camY = (camY + camSpd * Math.sin(tmpDir)) || player.y;
 
-  const xOffset = camX - cx;
-  const yOffset = camY - cy;
+  const xOffset = camX - global.screenWidthHalf;
+  const yOffset = camY - global.screenHeightHalf;
 
   let playerMockup = global.mockups.get(player.mockupId);
 
