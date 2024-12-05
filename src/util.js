@@ -1,14 +1,14 @@
-const PI2 = 2 * Math.PI;
+const TAU = 2 * Math.PI;
 
 function lerp(a, b, t) {
   return a + (b - a) * t;
 }
 
 function lerpAngle(a, b, t) {
-  let diff = (b - a) % PI2;
+  let diff = (b - a) % TAU;
 
-  if (diff <= -Math.PI) diff += PI2;
-  else if (diff > Math.PI) diff -= PI2;
+  if (diff <= -Math.PI) diff += TAU;
+  else if (diff > Math.PI) diff -= TAU;
 
   return a + diff * t;
 }

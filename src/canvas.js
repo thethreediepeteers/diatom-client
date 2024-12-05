@@ -99,7 +99,7 @@ class Canvas {
   mouseMove(event) {
     global.mouse.x = event.clientX;
     global.mouse.y = event.clientY;
-    
+
     global.socket.cmd.talk();
   }
 }

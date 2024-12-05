@@ -14,8 +14,8 @@ class Socket {
     let flag = false;
     let commands = [
       false, // moving
-      false, // lmb
-      false  // rmb 
+      false, // left mouse button
+      false  // right mouse button
     ];
 
     this.cmd = {

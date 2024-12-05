@@ -44,6 +44,7 @@ function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.fill();
 }
 
+// NOTE: tooFar is unused
 function drawEntities() {
   let player = global.player;
 
@@ -98,10 +99,10 @@ function drawEntities() {
     entity.y = (tooFar ? entity.serverData.y : targetY) || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
-    const targetMhealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
+    const targetMaxHealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
 
     entity.health = targetHealth;
-    entity.maxHealth = targetMhealth;
+    entity.maxHealth = targetMaxHealth;
 
     entity.angle = global.index == entity.index ? global.mouseAngle : (entity.angle === 0 ? entity.serverData.angle : lerpAngle(entity.angle, entity.serverData.angle, 0.4));
 
