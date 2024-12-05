@@ -30,6 +30,7 @@ const global = {
   },
   mockups: new Map(),
   colors: new Map(),
+  borderColorsCache: new Map(),
   color: "",
 }
 

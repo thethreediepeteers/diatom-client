@@ -130,12 +130,20 @@ function drawEntity(x, y, size, angle, color, mockup) {
 }
 
 function offsetHex(hex) {
+  const cached = global.borderColorsCache.get(hex);
+
+  if (cached) return cached;
+
   const color = parseInt(hex.slice(1), 16);
   const r = clamp(color >> 16);
   const g = clamp(color >> 8);
   const b = clamp(color);
 
-  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  const result = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+
+  global.borderColorsCache.set(hex, result);
+
+  return result;
 }
 
 function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
@@ -144,13 +152,13 @@ function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = 
 
   ctx.translate(x, y);
   ctx.rotate(angle);
-  
+
   ctx.beginPath();
   ctx.moveTo(0, h2);
   ctx.lineTo(length * 2, h1);
   ctx.lineTo(length * 2, -h1);
   ctx.lineTo(0, -h2);
-  
+
   ctx.lineWidth = 5;
   ctx.fillStyle = color;
   ctx.strokeStyle = strokeColor;
