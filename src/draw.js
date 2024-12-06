@@ -45,7 +45,7 @@ function drawHealth(x, y, health, maxHealth, r, color) {
 }
 
 function drawEntities() {
-  if (!global || !playerMockup || !global.player?.serverData?.x) return;
+  if (!global || !global.player?.serverData?.x) return;
   
   let player = global.player;
   
@@ -70,6 +70,8 @@ function drawEntities() {
   const yOffset = camY - global.screenHeightHalf;
 
   let playerMockup = global.mockups.get(player.mockupId);
+
+  if (!playerMockup) return;
 
   for (let [id, entity] of global.entities) {
     if (entity.dead) {
