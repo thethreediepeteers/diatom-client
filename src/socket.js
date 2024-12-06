@@ -164,24 +164,7 @@ class Socket {
           entity.team = team;
           entity.mockupId = mockupId;
 
-          if (id === global.index) {
-            global.player.dt = 0;
-
-            global.player.xOld = global.player.x;
-            global.player.yOld = global.player.y;
-
-            global.player.serverX = pos.x;
-            global.player.serverY = pos.y;
-
-            global.player.size = size;
-            global.player.angle = angle;
-            global.player.color = colorStr;
-            global.player.shape = shape;
-            global.player.health = health;
-            global.player.maxHealth = maxHealth;
-            global.player.team = team;
-            global.player.mockupId = mockupId;
-          }
+          if (id === global.index) global.player = entity;
         }
 
         for (let [id, entity] of global.entities) {
