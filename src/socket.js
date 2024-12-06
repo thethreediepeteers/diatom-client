@@ -129,6 +129,7 @@ class Socket {
           let entity = global.entities.get(id);
           if (!entity) {
             entity = {
+              size, angle, health, maxHealth, team,
               serverData: {
                 x: 0,
                 y: 0,
@@ -138,12 +139,7 @@ class Socket {
               },
               x: 0,
               y: 0,
-              size: 0,
-              angle: 0,
-              health: 0,
-              maxHealth: 0,
               color: colorStr,
-              team: 0,
               dead: false,
             };
             global.entities.set(id, entity);
@@ -164,7 +160,6 @@ class Socket {
           entity.team = team;
           entity.mockupId = mockupId;
 
-          if (!entity.angle) entity.angle = angle;
           if (id === global.index) global.player = entity;
         }
 
