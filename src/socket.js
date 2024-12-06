@@ -164,6 +164,7 @@ class Socket {
           entity.team = team;
           entity.mockupId = mockupId;
 
+          if (!entity.angle) entity.angle = angle;
           if (id === global.index) global.player = entity;
         }
 
