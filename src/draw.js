@@ -65,15 +65,15 @@ function drawEntities() {
     const distX = entity.serverData.x - entity.xOld;
     const distY = entity.serverData.y - entity.yOld;
 
-    entity.dt = (entity.dt + global.deltaTime) || 0;
+    entity.dt = entity.dt + global.deltaTime;
 
     const rate = entity.dt / 170;
 
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
 
-    entity.x = targetX// || entity.serverData.x;
-    entity.y = targetY// || entity.serverData.y;
+    entity.x = targetX;
+    entity.y = targetY;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMaxHealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
