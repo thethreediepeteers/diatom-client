@@ -75,8 +75,8 @@ function drawEntities() {
     entity.x = targetX;
     entity.y = targetY;
 
-    const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
-    const targetMaxHealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
+    const targetHealth = lerp(entity.health, entity.serverData.health, 0.2);
+    const targetMaxHealth = lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
 
     entity.health = targetHealth;
     entity.maxHealth = targetMaxHealth;
