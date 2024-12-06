@@ -151,10 +151,10 @@ class Socket {
 
           entity.index = id;
           entity.dt = 0;
-          entity.xOld = entity.x || entity.serverData.x;
-          entity.yOld = entity.y || entity.serverData.y;
           entity.serverData.x = pos.x;
           entity.serverData.y = pos.y;
+          entity.xOld = entity.x || entity.serverData.x;
+          entity.yOld = entity.y || entity.serverData.y;
           entity.serverData.angle = angle;
           entity.serverData.health = health;
           entity.serverData.maxHealth = maxHealth;
