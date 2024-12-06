@@ -72,8 +72,8 @@ function drawEntities() {
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
 
-    entity.x = targetX || entity.serverData.x;
-    entity.y = targetY || entity.serverData.y;
+    entity.x = targetX// || entity.serverData.x;
+    entity.y = targetY// || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMaxHealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
@@ -81,7 +81,7 @@ function drawEntities() {
     entity.health = targetHealth;
     entity.maxHealth = targetMaxHealth;
 
-    entity.angle = global.index == entity.index ? global.mouseAngle : (entity.angle === 0 ? entity.serverData.angle : lerpAngle(entity.angle, entity.serverData.angle, 0.4));
+    entity.angle = global.index == entity.index ? global.mouseAngle : lerpAngle(entity.angle, entity.serverData.angle, 0.3);
 
     let x = entity.x - xOffset;
     let y = entity.y - yOffset;
