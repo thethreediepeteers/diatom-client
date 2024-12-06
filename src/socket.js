@@ -170,6 +170,10 @@ class Socket {
         for (let [id, entity] of global.entities) {
           if (!ids.has(id)) {
             entity.dead = true;
+
+            if (id == global.index && document.getElementById("startmenu").style.display == "none") {
+              document.getElementById("startmenu").style.display = "block";
+            }
           }
         }
 
