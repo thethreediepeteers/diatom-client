@@ -47,21 +47,15 @@ function drawHealth(x, y, health, maxHealth, r, color) {
 function drawEntities() {
   if (!global || !global.player?.serverData?.x) return;
   
-  let player = global.player;
-  
-  const tmpDist = Math.hypot(camX - player.x, camY - player.y);
-  const tmpDir = Math.atan2(player.y - camY, player.x - camX);
+  const tmpDist = Math.hypot(camX - global.player.x, camY - global.player.y);
+  const tmpDir = Math.atan2(global.player.y - camY, global.player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
 
-  camX = (camX + camSpd * Math.cos(tmpDir)) || player.x;
-  camY = (camY + camSpd * Math.sin(tmpDir)) || player.y;
+  camX = (camX + camSpd * Math.cos(tmpDir)) || global.player.x;
+  camY = (camY + camSpd * Math.sin(tmpDir)) || global.player.y;
 
   const xOffset = camX - global.screenWidthHalf;
   const yOffset = camY - global.screenHeightHalf;
-
-  let playerMockup = global.mockups.get(player.mockupId);
-
-  if (!playerMockup) return;
 
   for (let [id, entity] of global.entities) {
     if (entity.dead) {
@@ -79,7 +73,7 @@ function drawEntities() {
 
     entity.dt = (entity.dt + global.deltaTime) || 0;
 
-    const rate = Math.min(1.7, entity.dt / 170);
+    const rate = Math.min(global.deltaTime * 0.1, entity.dt / (global.deltaTime * 100));
 
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
