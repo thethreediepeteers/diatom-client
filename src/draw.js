@@ -69,7 +69,7 @@ function drawEntities() {
 
     const distX = entity.serverData.x - entity.xOld;
     const distY = entity.serverData.y - entity.yOld;
-    const tooFar = Math.hypot(distX, distY) > 150;
+    const tooFar = Math.hypot(distX, distY) > 300;
 
     entity.dt = (entity.dt + global.deltaTime) || 0;
 
