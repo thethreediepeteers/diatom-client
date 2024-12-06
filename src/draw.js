@@ -69,17 +69,16 @@ function drawEntities() {
 
     const distX = entity.serverData.x - entity.xOld;
     const distY = entity.serverData.y - entity.yOld;
-    const tooFar = Math.hypot(distX, distY) > 300;
 
     entity.dt = (entity.dt + global.deltaTime) || 0;
 
-    const rate = Math.min(1.7, entity.dt / 170);
+    const rate = entity.dt / 170;
 
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
 
-    entity.x = (tooFar ? entity.serverData.x : targetX) || entity.serverData.x;
-    entity.y = (tooFar ? entity.serverData.y : targetY) || entity.serverData.y;
+    entity.x = targetX || entity.serverData.x;
+    entity.y = targetY || entity.serverData.y;
 
     const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
     const targetMaxHealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
