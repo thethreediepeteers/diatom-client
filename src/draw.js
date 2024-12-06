@@ -49,16 +49,6 @@ function drawEntities() {
   
   let player = global.player;
   
-  player.dt = (player.dt + global.deltaTime) || 0;
-
-  const rate = Math.min(1.7, player.dt / 170);
-
-  const distX = player.serverData.x - player.xOld;
-  const distY = player.serverData.y - player.yOld;
-
-  player.x = (player.xOld + distX * rate) || player.serverData.x;
-  player.y = (player.yOld + distY * rate) || player.serverData.y;
-
   const tmpDist = Math.hypot(camX - player.x, camY - player.y);
   const tmpDir = Math.atan2(player.y - camY, player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
