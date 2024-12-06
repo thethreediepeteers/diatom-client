@@ -171,7 +171,7 @@ class Socket {
           if (!ids.has(id)) {
             entity.dead = true;
 
-            if (id == global.index && document.getElementById("startmenu").style.display != "flex") {
+            if (id == global.index) {
               document.getElementById("startmenu").style.display = "flex";
               document.getElementById("canvas").style.display = "none";
             }
