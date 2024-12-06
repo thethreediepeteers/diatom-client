@@ -45,8 +45,10 @@ function drawHealth(x, y, health, maxHealth, r, color) {
 }
 
 function drawEntities() {
+  if (!global || !playerMockup || !global.player?.serverData?.x) return;
+  
   let player = global.player;
-
+  
   player.dt = (player.dt + global.deltaTime) || 0;
 
   const rate = Math.min(1.7, player.dt / 170);
@@ -68,8 +70,6 @@ function drawEntities() {
   const yOffset = camY - global.screenHeightHalf;
 
   let playerMockup = global.mockups.get(player.mockupId);
-
-  if (!global || !playerMockup) return;
 
   for (let [id, entity] of global.entities) {
     if (entity.dead) {
