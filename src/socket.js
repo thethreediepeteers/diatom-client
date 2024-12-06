@@ -171,8 +171,8 @@ class Socket {
           if (!ids.has(id)) {
             entity.dead = true;
 
-            if (id == global.index && document.getElementById("startmenu").style.display == "none") {
-              document.getElementById("startmenu").style.display = "block";
+            if (id == global.index && document.getElementById("startmenu").style.display != "flex") {
+              document.getElementById("startmenu").style.display = "flex";
               document.getElementById("canvas").style.display = "none";
             }
           }
