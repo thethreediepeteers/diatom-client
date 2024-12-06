@@ -51,8 +51,8 @@ function drawEntities() {
 
   const rate = Math.min(1.7, player.dt / 170);
 
-  const distX = player.player.serverData.x - player.xOld;
-  const distY = player.player.serverData.y - player.yOld;
+  const distX = player.serverData.x - player.xOld;
+  const distY = player.serverData.y - player.yOld;
 
   player.x = (player.xOld + distX * rate) || player.serverData.x;
   player.y = (player.yOld + distY * rate) || player.serverData.y;
