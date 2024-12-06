@@ -73,7 +73,7 @@ function drawEntities() {
 
     entity.dt = (entity.dt + global.deltaTime) || 0;
 
-    const rate = Math.min(global.deltaTime * 0.1, entity.dt / (global.deltaTime * 100));
+    const rate = Math.min(1.7, entity.dt / 170);
 
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
