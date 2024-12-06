@@ -129,6 +129,7 @@ class Socket {
           let entity = global.entities.get(id);
           if (!entity) {
             entity = {
+              size, angle, health, maxHealth, team,
               serverData: {
                 x: 0,
                 y: 0,
@@ -138,12 +139,7 @@ class Socket {
               },
               x: 0,
               y: 0,
-              size: 0,
-              angle: 0,
-              health: 0,
-              maxHealth: 0,
               color: colorStr,
-              team: 0,
               dead: false,
             };
             global.entities.set(id, entity);
@@ -151,10 +147,10 @@ class Socket {
 
           entity.index = id;
           entity.dt = 0;
-          entity.xOld = entity.x || entity.serverData.x;
-          entity.yOld = entity.y || entity.serverData.y;
           entity.serverData.x = pos.x;
           entity.serverData.y = pos.y;
+          entity.xOld = entity.x || entity.serverData.x;
+          entity.yOld = entity.y || entity.serverData.y;
           entity.serverData.angle = angle;
           entity.serverData.health = health;
           entity.serverData.maxHealth = maxHealth;
@@ -164,29 +160,17 @@ class Socket {
           entity.team = team;
           entity.mockupId = mockupId;
 
-          if (id === global.index) {
-            global.player.dt = 0;
-
-            global.player.xOld = global.player.x;
-            global.player.yOld = global.player.y;
-
-            global.player.serverX = pos.x;
-            global.player.serverY = pos.y;
-
-            global.player.size = size;
-            global.player.angle = angle;
-            global.player.color = colorStr;
-            global.player.shape = shape;
-            global.player.health = health;
-            global.player.maxHealth = maxHealth;
-            global.player.team = team;
-            global.player.mockupId = mockupId;
-          }
+          if (id === global.index) global.player = entity;
         }
 
         for (let [id, entity] of global.entities) {
           if (!ids.has(id)) {
             entity.dead = true;
+
+            if (id == global.index) {
+              document.getElementById("startmenu").style.display = "flex";
+              document.getElementById("canvas").style.display = "none";
+            }
           }
         }
 

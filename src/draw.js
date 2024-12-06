@@ -44,67 +44,44 @@ function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.fill();
 }
 
-// NOTE: tooFar is unused
 function drawEntities() {
-  let player = global.player;
-
-  player.dt = (player.dt + global.deltaTime) || 0;
-
-  const rate = Math.min(1.7, player.dt / 170);
-
-  const distX = player.serverX - player.xOld;
-  const distY = player.serverY - player.yOld;
-
-  const tooFar = Math.hypot(distX, distY) > 150;
-
-  player.x = (player.xOld + distX * rate) || player.serverX;
-  player.y = (player.yOld + distY * rate) || player.serverY;
-
-  const tmpDist = Math.hypot(camX - player.x, camY - player.y);
-  const tmpDir = Math.atan2(player.y - camY, player.x - camX);
+  if (!global || !global.player?.serverData?.x) return;
+  
+  const tmpDist = Math.hypot(camX - global.player.x, camY - global.player.y);
+  const tmpDir = Math.atan2(global.player.y - camY, global.player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
 
-  camX = (camX + camSpd * Math.cos(tmpDir)) || player.x;
-  camY = (camY + camSpd * Math.sin(tmpDir)) || player.y;
+  camX = (camX + camSpd * Math.cos(tmpDir)) || global.player.x;
+  camY = (camY + camSpd * Math.sin(tmpDir)) || global.player.y;
 
   const xOffset = camX - global.screenWidthHalf;
   const yOffset = camY - global.screenHeightHalf;
 
-  let playerMockup = global.mockups.get(player.mockupId);
-
-  if (!global || !playerMockup) return;
-
   for (let [id, entity] of global.entities) {
-    if (entity.dead) {
-      if (id === global.index) {
-        console.log("I am dead, please respawn");
-      }
-      continue;
-    }
+    if (entity.dead) continue;
 
     let mockup = global.mockups.get(entity.mockupId);
 
     const distX = entity.serverData.x - entity.xOld;
     const distY = entity.serverData.y - entity.yOld;
-    const tooFar = Math.hypot(distX, distY) > 150;
 
-    entity.dt = (entity.dt + global.deltaTime) || 0;
+    entity.dt = entity.dt + global.deltaTime;
 
-    const rate = Math.min(1.7, entity.dt / 170);
+    const rate = entity.dt / 170;
 
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
 
-    entity.x = (tooFar ? entity.serverData.x : targetX) || entity.serverData.x;
-    entity.y = (tooFar ? entity.serverData.y : targetY) || entity.serverData.y;
+    entity.x = targetX;
+    entity.y = targetY;
 
-    const targetHealth = entity.health === 0 ? entity.serverData.health : lerp(entity.health, entity.serverData.health, 0.2);
-    const targetMaxHealth = entity.maxHealth === 0 ? entity.serverData.maxHealth : lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
+    const targetHealth = lerp(entity.health, entity.serverData.health, 0.2);
+    const targetMaxHealth = lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
 
     entity.health = targetHealth;
     entity.maxHealth = targetMaxHealth;
 
-    entity.angle = global.index == entity.index ? global.mouseAngle : (entity.angle === 0 ? entity.serverData.angle : lerpAngle(entity.angle, entity.serverData.angle, 0.4));
+    entity.angle = global.index == entity.index ? global.mouseAngle : lerpAngle(entity.angle, entity.serverData.angle, 0.3);
 
     let x = entity.x - xOffset;
     let y = entity.y - yOffset;
