@@ -44,7 +44,6 @@ function drawHealth(x, y, health, maxHealth, r, color) {
   ctx.fill();
 }
 
-// NOTE: tooFar is unused
 function drawEntities() {
   let player = global.player;
 
@@ -52,13 +51,11 @@ function drawEntities() {
 
   const rate = Math.min(1.7, player.dt / 170);
 
-  const distX = player.serverX - player.xOld;
-  const distY = player.serverY - player.yOld;
+  const distX = player.player.serverData.x - player.xOld;
+  const distY = player.player.serverData.y - player.yOld;
 
-  const tooFar = Math.hypot(distX, distY) > 150;
-
-  player.x = (player.xOld + distX * rate) || player.serverX;
-  player.y = (player.yOld + distY * rate) || player.serverY;
+  player.x = (player.xOld + distX * rate) || player.serverData.x;
+  player.y = (player.yOld + distY * rate) || player.serverData.y;
 
   const tmpDist = Math.hypot(camX - player.x, camY - player.y);
   const tmpDir = Math.atan2(player.y - camY, player.x - camX);
