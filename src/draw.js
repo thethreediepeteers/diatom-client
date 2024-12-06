@@ -58,7 +58,7 @@ function drawEntities() {
   const yOffset = camY - global.screenHeightHalf;
 
   for (let [id, entity] of global.entities) {
-    if (entity.serverData.x == 0 || entity.dead) continue
+    if (entity.health == 0 || entity.dead) continue;
 
     let mockup = global.mockups.get(entity.mockupId);
 
