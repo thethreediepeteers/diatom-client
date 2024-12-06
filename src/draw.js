@@ -58,12 +58,7 @@ function drawEntities() {
   const yOffset = camY - global.screenHeightHalf;
 
   for (let [id, entity] of global.entities) {
-    if (entity.dead) {
-      if (id === global.index) {
-        console.log("I am dead, please respawn");
-      }
-      continue;
-    }
+    if (entity.serverData.x == 0 || entity.dead) continue
 
     let mockup = global.mockups.get(entity.mockupId);
 
