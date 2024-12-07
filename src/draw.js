@@ -51,8 +51,8 @@ function drawEntities() {
   const tmpDir = Math.atan2(global.player.y - camY, global.player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
 
-  camX = (camX + camSpd * Math.cos(tmpDir)) || global.player.x;
-  camY = (camY + camSpd * Math.sin(tmpDir)) || global.player.y;
+  camX += camSpd * Math.cos(tmpDir);
+  camY += camSpd * Math.sin(tmpDir);
 
   const xOffset = camX - global.screenWidthHalf;
   const yOffset = camY - global.screenHeightHalf;
