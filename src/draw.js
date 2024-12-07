@@ -5,7 +5,6 @@ import {
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d", { alpha: false });
-const clamp = value => Math.min(Math.max((value & 255) - 32, 0), 255);
 
 let camX = 0, camY = 0;
 
@@ -30,10 +29,10 @@ function drawDisconnected() {
   ctx.fillText("Disconnected", global.screenWidthHalf, global.screenHeightHalf);
 }
 
-function drawHealth(x, y, health, maxHealth, r, color) {
+function drawHealth(x, y, health, maxHealth, r, color, strokeColor) {
   ctx.beginPath();
 
-  ctx.fillStyle = offsetHex(color);
+  ctx.fillStyle = strokeColor;
   ctx.roundRect(x - maxHealth, y + r + 10, maxHealth * 2, 10, 5);
   ctx.fill();
 
@@ -60,71 +59,51 @@ function drawEntities() {
   for (let [id, entity] of global.entities) {
     if (entity.dead) continue;
 
-    let mockup = global.mockups.get(entity.mockupId);
+    entity.dt = entity.dt + global.deltaTime;
 
     const distX = entity.serverData.x - entity.xOld;
     const distY = entity.serverData.y - entity.yOld;
-
-    entity.dt = entity.dt + global.deltaTime;
-
+    
     const rate = entity.dt / 170;
-
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
-
-    entity.x = targetX;
-    entity.y = targetY;
-
+    
     const targetHealth = lerp(entity.health, entity.serverData.health, 0.2);
     const targetMaxHealth = lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
 
+    entity.x = targetX;
+    entity.y = targetY;
+    
     entity.health = targetHealth;
     entity.maxHealth = targetMaxHealth;
-
-    entity.angle = global.index == entity.index ? global.mouseAngle : lerpAngle(entity.angle, entity.serverData.angle, 0.3);
+    
+    entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.3);
 
     let x = entity.x - xOffset;
     let y = entity.y - yOffset;
 
-    drawEntity(x, y, entity.size, entity.angle, entity.color, mockup);
-    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color);
+    drawEntity(x, y, entity.size, entity.angle, entity.color, entity.strokeColor, global.mockups.get(entity.mockupId));
+    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.strokeColor);
   }
 }
 
-function drawEntity(x, y, size, angle, color, mockup) {
+function drawEntity(x, y, size, angle, color, strokeColor, mockup) {
   for (let gun of mockup.guns) {
     let gx = gun.offset * Math.cos(gun.direction + gun.angle + angle);
     let gy = gun.offset * Math.sin(gun.direction + gun.angle + angle);
 
-    drawTrapezoid(x + gx, y + gy, gun.length, gun.width, angle + gun.angle, gun.aspect, "#808080");
+    drawTrapezoid(x + gx, y + gy, gun.length, gun.width, angle + gun.angle, gun.aspect, "#808080", "#606060");
   }
 
   ctx.lineWidth = 5;
-  drawPoly(x, y, size, mockup.shape, angle, color);
+  drawPoly(x, y, size, mockup.shape, angle, color, strokeColor);
 
   for (let turret of mockup.turrets) {
-    drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, angle + turret.angle, "#808080");
+    drawPoly(turret.x + x, turret.y + y, turret.size, turret.shape, angle + turret.angle, "#808080", "#606060");
   }
 }
 
-function offsetHex(hex) {
-  const cached = global.borderColorsCache.get(hex);
-
-  if (cached) return cached;
-
-  const color = parseInt(hex.slice(1), 16);
-  const r = clamp(color >> 16);
-  const g = clamp(color >> 8);
-  const b = clamp(color);
-
-  const result = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-
-  global.borderColorsCache.set(hex, result);
-
-  return result;
-}
-
-function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = offsetHex(color)) {
+function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor) {
   const h1 = aspect > 0 ? width * aspect : width;
   const h2 = aspect > 0 ? width : -width / aspect;
 
@@ -145,7 +124,7 @@ function drawTrapezoid(x, y, length, width, angle, aspect, color, strokeColor = 
   ctx.resetTransform();
 }
 
-function drawPoly(x, y, radius, shape, angle, color, strokeColor = offsetHex(color)) {
+function drawPoly(x, y, radius, shape, angle, color, strokeColor) {
   angle += shape % 2 ? 0 : Math.PI / shape;
 
   ctx.beginPath();
