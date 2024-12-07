@@ -1,5 +1,18 @@
 import { global } from "./global.js";
 
+const clamp = value => Math.min(Math.max((value & 255) - 32, 0), 255);
+
+function offsetHex(hex) {
+  const color = parseInt(hex.slice(1), 16);
+  const r = clamp(color >> 16);
+  const g = clamp(color >> 8);
+  const b = clamp(color);
+
+  const result = '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+
+  return result;
+}
+
 class Socket {
   constructor(addr) {
     this.addr = addr;
@@ -156,11 +169,15 @@ class Socket {
           entity.serverData.maxHealth = maxHealth;
           entity.size = size;
           entity.color = colorStr;
+          entity.strokeColor = offsetHex(colorStr);
           entity.shape = shape;
           entity.team = team;
           entity.mockupId = mockupId;
 
-          if (id === global.index) global.player = entity;
+          if (id === global.index) {
+            global.player = entity;
+            entity.serverData.angle = global.mouseAngle; 
+          }
         }
 
         for (let [id, entity] of global.entities) {
