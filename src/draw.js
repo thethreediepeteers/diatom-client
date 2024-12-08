@@ -63,7 +63,7 @@ function drawEntities() {
 
     const distX = entity.serverData.x - entity.xOld;
     const distY = entity.serverData.y - entity.yOld;
-    
+
     const rate = entity.dt / 170;
     const targetX = entity.xOld + distX * rate;
     const targetY = entity.yOld + distY * rate;
