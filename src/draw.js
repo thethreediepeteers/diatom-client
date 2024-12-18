@@ -45,7 +45,7 @@ function drawHealth(x, y, health, maxHealth, r, color, strokeColor) {
 
 function drawEntities() {
   if (!global || !global.player?.serverData?.x) return;
-  
+
   const tmpDist = Math.hypot(camX - global.player.x, camY - global.player.y);
   const tmpDir = Math.atan2(global.player.y - camY, global.player.x - camX);
   const camSpd = Math.min(tmpDist * 0.01 * global.deltaTime, tmpDist);
@@ -56,34 +56,40 @@ function drawEntities() {
   const xOffset = camX - global.screenWidthHalf;
   const yOffset = camY - global.screenHeightHalf;
 
-  for (let [id, entity] of global.entities) {
-    if (entity.dead) continue;
+  for (let layer of global.layers) {
+    if (!layer) { continue; }
 
-    entity.dt = entity.dt + global.deltaTime;
+    for (let id of layer) {
+      const entity = global.entities.get(id);
+      if (entity.dead) continue;
 
-    const distX = entity.serverData.x - entity.xOld;
-    const distY = entity.serverData.y - entity.yOld;
+      entity.dt = entity.dt + global.deltaTime;
 
-    const rate = entity.dt / 170;
-    const targetX = entity.xOld + distX * rate;
-    const targetY = entity.yOld + distY * rate;
-    
-    const targetHealth = lerp(entity.health, entity.serverData.health, 0.2);
-    const targetMaxHealth = lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
+      const distX = entity.serverData.x - entity.xOld;
+      const distY = entity.serverData.y - entity.yOld;
 
-    entity.x = targetX;
-    entity.y = targetY;
-    
-    entity.health = targetHealth;
-    entity.maxHealth = targetMaxHealth;
-    
-    entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.3);
+      const rate = entity.dt / 170;
+      const targetX = entity.xOld + distX * rate;
+      const targetY = entity.yOld + distY * rate;
 
-    let x = entity.x - xOffset;
-    let y = entity.y - yOffset;
+      const targetHealth = lerp(entity.health, entity.serverData.health, 0.2);
+      const targetMaxHealth = lerp(entity.maxHealth, entity.serverData.maxHealth, 0.2);
 
-    drawEntity(x, y, entity.size, entity.angle, entity.color, entity.strokeColor, global.mockups.get(entity.mockupId));
-    drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.strokeColor);
+      entity.x = targetX;
+      entity.y = targetY;
+
+      entity.health = targetHealth;
+      entity.maxHealth = targetMaxHealth;
+
+      entity.angle = lerpAngle(entity.angle, entity.serverData.angle, 0.3);
+
+      let x = entity.x - xOffset;
+      let y = entity.y - yOffset;
+
+      drawEntity(x, y, entity.size, entity.angle, entity.color, entity.strokeColor, global.mockups.get(entity.mockupId));
+      drawHealth(x, y, entity.health, entity.maxHealth, entity.size, entity.color, entity.strokeColor);
+
+    }
   }
 }
 

@@ -176,13 +176,20 @@ class Socket {
 
           if (id === global.index) {
             global.player = entity;
-            entity.serverData.angle = global.mouseAngle; 
+            entity.serverData.angle = global.mouseAngle;
           }
+
+          const mockup = global.mockups.get(entity.mockupId);
+          entity.layer = mockup.layer;
+
+          global.layers[entity.layer] = global.layers[entity.layer] || [];
+          if (!global.layers[entity.layer].includes(id)) { global.layers[entity.layer].push(id); }
         }
 
         for (let [id, entity] of global.entities) {
           if (!ids.has(id)) {
             entity.dead = true;
+            global.layers[entity.layer].splice(global.layers[entity.layer].indexOf(id), 1);
 
             if (id == global.index) {
               document.getElementById("startmenu").style.display = "flex";

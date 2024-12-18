@@ -1,5 +1,6 @@
 const global = {
   movement: 0,
+  layers: [],
   entities: new Map(),
   gameStart: false,
   disconnected: false,

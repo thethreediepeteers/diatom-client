@@ -98,11 +98,14 @@ class Game {
         offset += 4;
         let size = view.getFloat32(offset, true);
         offset += 4;
+        let layer = view.getUint8(offset, true);
+        offset += 1;
         let shape = view.getUint8(offset, true);
         offset += 1;
 
         mockup.id = mockupId;
         mockup.size = size;
+        mockup.layer = layer;
         mockup.shape = shape;
 
         let gunsSize = view.getInt32(offset, true);
@@ -187,10 +190,12 @@ class Game {
       const px = global.player.x;
       const py = global.player.y;
 
+      // layer 1 
       this.canvas.ctx.fillStyle = "#d9d9d9";
       this.canvas.ctx.fillRect(cx - px, cy - py, global.map.width, global.map.height);
       this.canvas.drawGrid(cx - px, cy - py, 32);
 
+      // layers 3 & 4
       drawEntities();
     } else if (!global.disconnected) drawConnecting();
     if (global.disconnected) {
